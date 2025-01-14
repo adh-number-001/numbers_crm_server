@@ -1,0 +1,44 @@
+name: Deploy to ECR
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    name: Build Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3 #체크아웃 받기
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # Github Secret 이름
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Github Secret 이름
+          aws-region: ap-northeast-2 # AWS 리전 선택
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: chappy_back # ecr 이름
+          IMAGE_TAG: ${{ github.run_number }} # git 커밋넘버를 이미지 이름 구분을 위해 넣어줌
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: .ecs/prod/task.json # task파일
+          container-name: chappy_back #이미지 컨테이너 이름
+          image: ${{ steps.build-image.outputs.image }}
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: chappy-back-ecs #클러스터 서비스 명
+          cluster: chappy_back_cluster # 클러스터 명
+          wait-for-service-stability: true
