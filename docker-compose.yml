@@ -1,0 +1,31 @@
+# docker-compose.yml
+version: '3'
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - blue
+      - green
+    networks:
+      - app-network
+
+  blue:
+    build: ./node-app
+    networks:
+      - app-network
+    environment:
+      - PORT=3000
+
+  green:
+    build: ./node-app
+    networks:
+      - app-network
+    environment:
+      - PORT=3000
+
+networks:
+  app-network:
+    driver: bridge
