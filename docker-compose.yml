@@ -13,14 +13,14 @@ services:
       - app-network
 
   blue:
-    build: ./node-app
+    build: .
     networks:
       - app-network
     environment:
       - PORT=3000
 
   green:
-    build: ./node-app
+    build: .
     networks:
       - app-network
     environment:
