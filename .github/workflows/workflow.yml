@@ -32,30 +32,32 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Check environment # 디버깅을 위한 환경 체크
         run: |
           node -v
-          npm -v
+          yarn -v
           pwd
           ls -la
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install
+      - name: Run lint
+        run: yarn lint
 
       - name: numbers_crm CI/CD
         run: |
           cat package.json
-          npm run test --verbose
+          yarn run test --verbose
 
       - name: Run tests
-        run: npm run test
+        run: yarn test
         env:
           DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@adhd.cvdkz8ngl0rg.ap-northeast-2.rds.amazonaws.com:5432/${{ secrets.DB_NAME }}
 
       - name: Build
-        run: npm run build
+        run: yarn build
 
   deploy-develop:
     needs: test
@@ -73,8 +75,8 @@ jobs:
             cd ~/numbers_crm_server
             git checkout develop
             git pull origin develop
-            npm ci
-            npm run build
+            yarn install
+            yarn build
             pm2 reload numbers-crm-api-dev
 
   deploy-production:
@@ -93,6 +95,6 @@ jobs:
             cd ~/numbers_crm_server
             git checkout main
             git pull origin main
-            npm ci
-            npm run build
+            yarn install
+            yarn build
             pm2 reload numbers-crm-api-prod
