@@ -1,31 +1,89 @@
-name: Deploy to EC2
+name: numbers_crm CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
-  deploy:
-    name: Deploy to EC2
+  test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      # 1. 리포지토리 체크아웃
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # 2. EC2 서버로 코드 업로드 및 배포
-      - name: Deploy to EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-            # 배포 디렉터리로 이동
-            cd /home/ec2-user/project-directory
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
 
-            # 최신 코드 가져오기
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test
+        env:
+          DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@adhd.cvdkz8ngl0rg.ap-northeast-2.rds.amazonaws.com:5432/${{ secrets.DB_NAME }}
+
+      - name: Build
+        run: npm run build
+
+  deploy-develop:
+    needs: test
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to Dev Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/numbers_crm_server
+            git checkout develop
+            git pull origin develop
+            npm ci
+            npm run build
+            pm2 reload numbers-crm-api-dev
+
+  deploy-production:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to Production
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/numbers_crm_server
+            git checkout main
             git pull origin main
-
-            # Docker Compose 또는 애플리케이션 재시작
-            docker-compose down
-            docker-compose up -d --build
-          EOF
+            npm ci
+            npm run build
+            pm2 reload numbers-crm-api-prod
