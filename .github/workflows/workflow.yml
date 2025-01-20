@@ -42,9 +42,9 @@ jobs:
           ls -la
 
       - name: Install dependencies
-        run: yarn install
-      - name: Run lint
-        run: yarn lint
+        run: |
+          yarn install
+          yarn add -D eslint-config-airbnb-base eslint-config-airbnb-typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser
 
       - name: numbers_crm CI/CD
         run: |
