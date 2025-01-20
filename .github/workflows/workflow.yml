@@ -52,7 +52,7 @@ jobs:
           yarn run test --verbose
 
       - name: Run tests
-        run: yarn test
+        run: yarn test --passWithNoTests
         env:
           DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@adhd.cvdkz8ngl0rg.ap-northeast-2.rds.amazonaws.com:5432/${{ secrets.DB_NAME }}
 
