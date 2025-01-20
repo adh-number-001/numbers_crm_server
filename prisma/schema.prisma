@@ -7,9 +7,164 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model TermsOfUse {
+  id        Int     @id @default(autoincrement())
+  createdAt BigInt
+  isDeleted Boolean
+  isRequire Boolean
+  date      Int
+
+  userTermsOfUse UserTermsOfUse[]
+}
+
+model UserTermsOfUse {
+  id           Int     @id @default(autoincrement())
+  createdAt    BigInt
+  isDeleted    Boolean
+  userId       Int
+  termsOfUseId Int
+
+  user       User       @relation(fields: [userId], references: [id])
+  termsOfUse TermsOfUse @relation(fields: [termsOfUseId], references: [id])
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  isDeleted Boolean  @default(false)
-  created   DateTime @default(now())
-  modified  DateTime @updatedAt
+  id          Int     @id @default(autoincrement())
+  createdAt   BigInt
+  isDeleted   Boolean
+  isBlocked   Boolean
+  isAdmin     Boolean
+  name        String
+  phoneNumber String
+  email       String?
+  password    String?
+
+  oAuth               OAuth?
+  device              Device?
+  contactCategory     ContactCategory[]
+  callLog             CallLog[]
+  notificationSetting NotificationSetting?
+  userTermsOfUse      UserTermsOfUse[]
+}
+
+model OAuth {
+  id                    Int     @id @default(autoincrement())
+  createdAt             BigInt
+  isDeleted             Boolean
+  userId                Int     @unique
+  provider              String
+  providerUserId        String
+  refreshToken          String  @unique
+  accessTokenExpiresAt  Int
+  refreshTokenExpiresAt Int
+  scope                 String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Device {
+  id          Int     @id @default(autoincrement())
+  createdAt   BigInt
+  isDeleted   Boolean
+  userId      Int     @unique
+  deviceToken String
+  deviceType  String
+  deviceName  String
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model ContactCategory {
+  id        Int    @id @default(autoincrement())
+  createdAt BigInt
+  userId    Int
+  name      String
+
+  user User @relation(fields: [userId], references: [id])
+
+  contacts Contact[]
+}
+
+model Contact {
+  id                Int    @id @default(autoincrement())
+  createdAt         BigInt
+  contactCategoryId Int
+  name              String
+  phoneNumber       String
+
+  contactCategory ContactCategory @relation(fields: [contactCategoryId], references: [id])
+
+  contactNote ContactNote?
+  callLog     CallLog[]
+}
+
+// TODO: 한 연락처에 메모 1:1인지 1:n인지 정해야 함
+model ContactNote {
+  id        Int    @id @default(autoincrement())
+  createdAt BigInt
+  contactId Int    @unique
+  body      String
+
+  contact Contact @relation(fields: [contactId], references: [id])
+}
+
+// NOTE: 저장되지 않은 번호와 통화한 기록도 가져올건지, 문답 작성 안했을경우 기본 어떻게 보여줄지 (default값 있는지)
+model CallLog {
+  id             Int    @id @default(autoincrement())
+  createdAt      BigInt
+  userId         Int
+  contactId      Int?
+  callerNumber   String
+  receiverNumber String
+  callType       String
+  startedAt      Int
+  endedAt        Int
+  duration       Int
+
+  user    User     @relation(fields: [userId], references: [id])
+  contact Contact? @relation(fields: [contactId], references: [id])
+
+  callLogNote       CallLogNote?
+  userCallLogAnswer UserCallLogAnswer[]
+}
+
+model CallLogNote {
+  id        Int    @id @default(autoincrement())
+  createdAt BigInt
+  callLogId Int    @unique
+  body      String
+
+  callLog CallLog @relation(fields: [callLogId], references: [id])
+}
+
+model CallLogQuestion {
+  id        Int     @id @default(autoincrement())
+  createdAt BigInt
+  isDeleted Boolean
+  body      String
+  position  Int
+
+  userCallLogAnswer UserCallLogAnswer[]
+}
+
+model UserCallLogAnswer {
+  id                Int    @id @default(autoincrement())
+  createdAt         BigInt
+  callLogQuestionId Int
+  callLogId         Int
+  answer            String
+
+  callLog         CallLog         @relation(fields: [callLogId], references: [id])
+  callLogQuestion CallLogQuestion @relation(fields: [callLogQuestionId], references: [id])
+}
+
+model NotificationSetting {
+  id            Int     @id @default(autoincrement())
+  createdAt     BigInt
+  userId        Int     @unique
+  isCallEnabled Boolean
+  isNoteEnabled Boolean
+  isSyncEnabled Boolean
+
+  user User @relation(fields: [userId], references: [id])
 }
