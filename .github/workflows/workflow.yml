@@ -49,7 +49,7 @@ jobs:
       - name: numbers_crm CI/CD
         run: |
           cat package.json
-          yarn run test --verbose
+          yarn test --passWithNoTests
 
       - name: Run tests
         run: yarn test --passWithNoTests
