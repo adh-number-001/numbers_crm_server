@@ -82,7 +82,18 @@ model ContactCategory {
 
   user User @relation(fields: [userId], references: [id])
 
-  contacts Contact[]
+  contactName ContactName[]
+}
+
+model ContactName {
+  id                Int    @id @default(autoincrement())
+  createdAt         BigInt
+  contactCategoryId Int
+  contactId         Int
+  name              String
+
+  contactCategory ContactCategory @relation(fields: [contactCategoryId], references: [id])
+  contact         Contact         @relation(fields: [contactId], references: [id])
 }
 
 model Contact {
@@ -92,13 +103,11 @@ model Contact {
   name              String
   phoneNumber       String
 
-  contactCategory ContactCategory @relation(fields: [contactCategoryId], references: [id])
-
   contactNote ContactNote?
   callLog     CallLog[]
+  contactName ContactName[]
 }
 
-// TODO: 한 연락처에 메모 1:1인지 1:n인지 정해야 함
 model ContactNote {
   id        Int    @id @default(autoincrement())
   createdAt BigInt
