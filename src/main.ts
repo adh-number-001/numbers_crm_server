@@ -21,11 +21,18 @@ async function bootstrap() {
 
   corsConfig(app);
 
-  const env = process.env.NODE_ENV;
+  // const env = process.env.NODE_ENV;
   // if (env !== 'prod') {
   //   apiDocumentConfig(app, { title: '넘버거래소 CRM', description: '넘버거래소 CRM API 문서 입니다.' });
   // }
-  apiDocumentConfig(app, { title: '넘버거래소 CRM', description: '넘버거래소 CRM API 문서 입니다.' });
+  apiDocumentConfig(
+    app,
+    {
+      title: '넘버거래소 CRM',
+      description: '넘버거래소 CRM API 문서 입니다.',
+    },
+    'Number CRM',
+  );
 
   await app.listen(3000);
 }
