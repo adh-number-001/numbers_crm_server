@@ -15,12 +15,12 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@common": ["src/common"],
-      "@common/*": ["src/common/*"],
-      "@config": ["src/config"],
-      "@config/*": ["src/config/*"],
-      "@lib": ["src/library/*"],
-      "@lib/*": ["src/library/*"]
+      "@common": ["libs/common"],
+      "@common/*": ["libs/common/*"],
+      "@config": ["libs/config"],
+      "@config/*": ["libs/config/*"],
+      "@lib": ["libs/*"],
+      "@lib/*": ["libs/*"]
     }
   }
 }

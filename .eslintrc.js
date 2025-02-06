@@ -30,5 +30,11 @@ module.exports = {
     'max-classes-per-file': 'off',
     'require-await': 'warn',
     'no-underscore-dangle': 'warn',
+    "prettier/prettier": [
+      "error",
+      {
+        endOfLine: 'auto',
+      }
+    ],
   },
 };
