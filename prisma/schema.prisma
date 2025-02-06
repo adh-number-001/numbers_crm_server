@@ -45,19 +45,28 @@ model User {
   callLog             CallLog[]
   notificationSetting NotificationSetting?
   userTermsOfUse      UserTermsOfUse[]
+  userToken           UserToken?
+}
+
+model UserToken {
+  id                    Int    @id @default(autoincrement())
+  createdAt             BigInt
+  userId                Int    @unique
+  refreshToken          String @unique
+  accessTokenExpiresAt  Int
+  refreshTokenExpiresAt Int
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model OAuth {
-  id                    Int     @id @default(autoincrement())
-  createdAt             BigInt
-  isDeleted             Boolean
-  userId                Int     @unique
-  provider              String
-  providerUserId        String
-  refreshToken          String  @unique
-  accessTokenExpiresAt  Int
-  refreshTokenExpiresAt Int
-  scope                 String?
+  id             Int     @id @default(autoincrement())
+  createdAt      BigInt
+  isDeleted      Boolean
+  userId         Int     @unique
+  provider       String
+  providerUserId String
+  scope          String?
 
   user User @relation(fields: [userId], references: [id])
 }
