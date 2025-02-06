@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 export default function apiDocumentConfig<T extends INestApplication>(
   app: T,
   documentInfo: { title: string; description: string },
+  siteTitle: string,
 ) {
   const { title, description } = documentInfo;
 
@@ -14,10 +15,11 @@ export default function apiDocumentConfig<T extends INestApplication>(
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('document', app, document, {
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'conventional',
     },
+    customSiteTitle: siteTitle,
   });
 }
