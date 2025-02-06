@@ -9,18 +9,18 @@ datasource db {
 
 model TermsOfUse {
   id        Int     @id @default(autoincrement())
-  createdAt BigInt
-  isDeleted Boolean
+  createdAt BigInt  @default(0)
+  isDeleted Boolean @default(false)
   isRequire Boolean
-  date      Int
+  date      BigInt
 
   userTermsOfUse UserTermsOfUse[]
 }
 
 model UserTermsOfUse {
   id           Int     @id @default(autoincrement())
-  createdAt    BigInt
-  isDeleted    Boolean
+  createdAt    BigInt  @default(0)
+  isDeleted    Boolean @default(false)
   userId       Int
   termsOfUseId Int
 
@@ -30,13 +30,13 @@ model UserTermsOfUse {
 
 model User {
   id          Int     @id @default(autoincrement())
-  createdAt   BigInt
-  isDeleted   Boolean
-  isBlocked   Boolean
-  isAdmin     Boolean
+  createdAt   BigInt  @default(0)
+  isDeleted   Boolean @default(false)
+  isBlocked   Boolean @default(false)
+  isAdmin     Boolean @default(false)
   name        String
-  phoneNumber String
-  email       String?
+  phoneNumber String  @unique
+  email       String? @unique
   password    String?
 
   oAuth               OAuth?
@@ -45,27 +45,36 @@ model User {
   callLog             CallLog[]
   notificationSetting NotificationSetting?
   userTermsOfUse      UserTermsOfUse[]
+  userToken           UserToken?
+}
+
+model UserToken {
+  id                    Int    @id @default(autoincrement())
+  createdAt             BigInt @default(0)
+  userId                Int    @unique
+  refreshToken          String @unique
+  accessTokenExpiresAt  Int
+  refreshTokenExpiresAt Int
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model OAuth {
-  id                    Int     @id @default(autoincrement())
-  createdAt             BigInt
-  isDeleted             Boolean
-  userId                Int     @unique
-  provider              String
-  providerUserId        String
-  refreshToken          String  @unique
-  accessTokenExpiresAt  Int
-  refreshTokenExpiresAt Int
-  scope                 String?
+  id             Int     @id @default(autoincrement())
+  createdAt      BigInt  @default(0)
+  isDeleted      Boolean @default(false)
+  userId         Int     @unique
+  provider       String
+  providerUserId String
+  scope          String?
 
   user User @relation(fields: [userId], references: [id])
 }
 
 model Device {
   id          Int     @id @default(autoincrement())
-  createdAt   BigInt
-  isDeleted   Boolean
+  createdAt   BigInt  @default(0)
+  isDeleted   Boolean @default(false)
   userId      Int     @unique
   deviceToken String
   deviceType  String
@@ -76,7 +85,7 @@ model Device {
 
 model ContactCategory {
   id        Int    @id @default(autoincrement())
-  createdAt BigInt
+  createdAt BigInt @default(0)
   userId    Int
   name      String
 
@@ -87,7 +96,7 @@ model ContactCategory {
 
 model ContactName {
   id                Int    @id @default(autoincrement())
-  createdAt         BigInt
+  createdAt         BigInt @default(0)
   contactCategoryId Int
   contactId         Int
   name              String
@@ -98,7 +107,7 @@ model ContactName {
 
 model Contact {
   id                Int    @id @default(autoincrement())
-  createdAt         BigInt
+  createdAt         BigInt @default(0)
   contactCategoryId Int
   name              String
   phoneNumber       String
@@ -110,7 +119,7 @@ model Contact {
 
 model ContactNote {
   id        Int    @id @default(autoincrement())
-  createdAt BigInt
+  createdAt BigInt @default(0)
   contactId Int    @unique
   body      String
 
@@ -120,7 +129,7 @@ model ContactNote {
 // NOTE: 저장되지 않은 번호와 통화한 기록도 가져올건지, 문답 작성 안했을경우 기본 어떻게 보여줄지 (default값 있는지)
 model CallLog {
   id             Int    @id @default(autoincrement())
-  createdAt      BigInt
+  createdAt      BigInt @default(0)
   userId         Int
   contactId      Int?
   callerNumber   String
@@ -139,7 +148,7 @@ model CallLog {
 
 model CallLogNote {
   id        Int    @id @default(autoincrement())
-  createdAt BigInt
+  createdAt BigInt @default(0)
   callLogId Int    @unique
   body      String
 
@@ -148,8 +157,8 @@ model CallLogNote {
 
 model CallLogQuestion {
   id        Int     @id @default(autoincrement())
-  createdAt BigInt
-  isDeleted Boolean
+  createdAt BigInt  @default(0)
+  isDeleted Boolean @default(false)
   body      String
   position  Int
 
@@ -158,7 +167,7 @@ model CallLogQuestion {
 
 model UserCallLogAnswer {
   id                Int    @id @default(autoincrement())
-  createdAt         BigInt
+  createdAt         BigInt @default(0)
   callLogQuestionId Int
   callLogId         Int
   answer            String
@@ -169,7 +178,7 @@ model UserCallLogAnswer {
 
 model NotificationSetting {
   id            Int     @id @default(autoincrement())
-  createdAt     BigInt
+  createdAt     BigInt  @default(0)
   userId        Int     @unique
   isCallEnabled Boolean
   isNoteEnabled Boolean

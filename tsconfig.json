@@ -19,8 +19,12 @@
       "@common/*": ["libs/common/*"],
       "@config": ["libs/config"],
       "@config/*": ["libs/config/*"],
-      "@lib": ["libs/*"],
-      "@lib/*": ["libs/*"]
+      "@prisma": [
+        "libs/prisma/src"
+      ],
+      "@prisma/*": [
+        "libs/prisma/src/*"
+      ],
     }
   }
 }
