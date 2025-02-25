@@ -81,8 +81,9 @@ jobs:
            yarn install
            yarn build
 
-           # PM2로 애플리케이션 재시작
-           pm2 reload numbers-crm-api-dev
+           # PM2로 애플리케이션 시작 (기존 프로세스 삭제 후 재시작)
+           pm2 delete numbers-crm-api-dev || true
+           pm2 start dist/main.js --name numbers-crm-api-dev
  
  deploy-production:
    needs: test
@@ -120,5 +121,6 @@ jobs:
            yarn install
            yarn build
 
-           # PM2로 애플리케이션 재시작
-           pm2 reload numbers-crm-api-prod
+           # PM2로 애플리케이션 시작 (기존 프로세스 삭제 후 재시작)
+           pm2 delete numbers-crm-api-prod || true
+           pm2 start dist/main.js --name numbers-crm-api-prod
