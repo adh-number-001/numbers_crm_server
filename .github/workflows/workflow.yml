@@ -1,15 +1,12 @@
 name: numbers_crm CI/CD
-
 on:
   push:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
-
 jobs:
   test:
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:latest
@@ -24,46 +21,34 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
       - uses: actions/checkout@v3
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'yarn'
-
-      - name: Check environment # 디버깅을 위한 환경 체크
+      - name: Check environment
         run: |
           node -v
           yarn -v
           pwd
           ls -la
-
       - name: Install dependencies
         run: |
           yarn install
           yarn add -D eslint-config-airbnb-base eslint-config-airbnb-typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser
-
-      - name: numbers_crm CI/CD
-        run: |
-          cat package.json
-          yarn test --passWithNoTests
-
       - name: Run tests
         run: yarn test --passWithNoTests
         env:
           DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@adhd.cvdkz8ngl0rg.ap-northeast-2.rds.amazonaws.com:5432/${{ secrets.DB_NAME }}
-
       - name: Build
         run: yarn build
-
+  
   deploy-develop:
     needs: test
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
-    
     steps:
       - name: Deploy to Dev Server
         uses: appleboy/ssh-action@master
@@ -72,18 +57,44 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/numbers_crm_server
+            # Node.js, Yarn, PM2 설치 확인 및 설치
+            if ! command -v node &> /dev/null; then
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            fi
+            
+            if ! command -v yarn &> /dev/null; then
+              npm install -g yarn
+            fi
+            
+            if ! command -v pm2 &> /dev/null; then
+              npm install -g pm2
+            fi
+
+            # 프로젝트 디렉토리 준비
+            mkdir -p ~/numbers_crm
+            cd ~/numbers_crm
+
+            # Git 저장소 업데이트
+            if [ ! -d .git ]; then
+              git init
+              git remote add origin https://github.com/your-username/numbers_crm_server.git
+            fi
+            git fetch
             git checkout develop
             git pull origin develop
+
+            # 의존성 설치 및 빌드
             yarn install
             yarn build
-            pm2 reload numbers-crm-api-dev
 
+            # PM2로 애플리케이션 재시작
+            pm2 reload numbers-crm-api-dev
+  
   deploy-production:
     needs: test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    
     steps:
       - name: Deploy to Production
         uses: appleboy/ssh-action@master
@@ -92,9 +103,36 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/numbers_crm_server
+            # Node.js, Yarn, PM2 설치 확인 및 설치
+            if ! command -v node &> /dev/null; then
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            fi
+            
+            if ! command -v yarn &> /dev/null; then
+              npm install -g yarn
+            fi
+            
+            if ! command -v pm2 &> /dev/null; then
+              npm install -g pm2
+            fi
+
+            # 프로젝트 디렉토리 준비
+            mkdir -p ~/numbers_crm
+            cd ~/numbers_crm
+
+            # Git 저장소 업데이트
+            if [ ! -d .git ]; then
+              git init
+              git remote add origin https://github.com/your-username/numbers_crm_server.git
+            fi
+            git fetch
             git checkout main
             git pull origin main
+
+            # 의존성 설치 및 빌드
             yarn install
             yarn build
+
+            # PM2로 애플리케이션 재시작
             pm2 reload numbers-crm-api-prod
