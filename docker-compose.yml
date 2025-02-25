@@ -1,6 +1,5 @@
 # docker-compose.yml
 version: '3'
-
 services:
   nginx:
     build: ./nginx
@@ -11,21 +10,22 @@ services:
       - green
     networks:
       - app-network
-
   blue:
     build: .
+    ports:
+      - "3000:3000"  # 추가: 호스트의 3000번 포트와 컨테이너의 3000번 포트 매핑
     networks:
       - app-network
     environment:
       - PORT=3000
-
   green:
     build: .
+    ports:
+      - "3000:3000"  # 추가: 호스트의 3000번 포트와 컨테이너의 3000번 포트 매핑
     networks:
       - app-network
     environment:
       - PORT=3000
-
 networks:
   app-network:
     driver: bridge
