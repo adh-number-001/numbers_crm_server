@@ -81,9 +81,13 @@ jobs:
            yarn install
            yarn build
 
+           # 빌드된 파일 경로 확인
+           ls -la
+           ls -la dist
+
            # PM2로 애플리케이션 시작 (기존 프로세스 삭제 후 재시작)
            pm2 delete numbers-crm-api-dev || true
-           pm2 start dist/main.js --name numbers-crm-api-dev
+           pm2 start dist/src/main.js --name numbers-crm-api-dev
  
  deploy-production:
    needs: test
@@ -121,6 +125,10 @@ jobs:
            yarn install
            yarn build
 
+           # 빌드된 파일 경로 확인
+           ls -la
+           ls -la dist
+
            # PM2로 애플리케이션 시작 (기존 프로세스 삭제 후 재시작)
            pm2 delete numbers-crm-api-prod || true
-           pm2 start dist/main.js --name numbers-crm-api-prod
+           pm2 start dist/src/main.js --name numbers-crm-api-prod
