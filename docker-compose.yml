@@ -12,19 +12,21 @@ services:
   blue:
     build: .
     ports:
-      - "3000:3000"  # 추가: 호스트의 3000번 포트와 컨테이너의 3000번 포트 매핑
+      - "3000:3000" # 추가: 호스트의 3000번 포트와 컨테이너의 3000번 포트 매핑
     networks:
       - app-network
     environment:
       - PORT=3000
+    command: yarn start:prod  # 추가: 실행 명령어 지정
   green:
     build: .
     ports:
-      - "3002:3000"  # 추가: 호스트의 3002번 포트와 컨테이너의 3000번 포트 매핑
+      - "3002:3000" # 추가: 호스트의 3002번 포트와 컨테이너의 3000번 포트 매핑
     networks:
       - app-network
     environment:
       - PORT=3000
+    command: yarn start:prod  # 추가: 실행 명령어 지정
 networks:
   app-network:
     driver: bridge
