@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import {
+  ApiCreatedResponse,
   ApiForbiddenResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -21,7 +21,7 @@ export class AuthController {
   @ApiForbiddenResponse({
     description: '이미 사용중인 email 또는 전화번호 입니다',
   })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     type: RegisterResponseDto,
   })
   async register(@Body() requestDto: RegisterRequestDto) {
