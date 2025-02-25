@@ -9,8 +9,9 @@ import { PrismaModule } from '@prisma';
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ContactModule } from './contact/contact.module';
 
-const domainModules = [AuthModule, UserModule];
+const domainModules = [AuthModule, UserModule, ContactModule];
 
 @Module({
   imports: [

@@ -15,7 +15,7 @@ export default function apiDocumentConfig<T extends INestApplication>(
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('document', app, document, {
+  SwaggerModule.setup('documents', app, document, {
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'conventional',
