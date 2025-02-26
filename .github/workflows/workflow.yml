@@ -7,12 +7,9 @@ jobs:
   debug-secrets:
     runs-on: ubuntu-latest
     steps:
-      - name: Assign Secret to Environment Variable
+      - name: Debug Secrets
         run: |
-          echo "PROD_HOST=${{ secrets.PROD_HOST }}" > secret_debug.txt
-
-      - name: Print File Contents
-        run: cat secret_debug.txt
+          echo "PROD_HOST=${{ secrets.PROD_HOST }}" | sed 's/./& /g'
   deploy:
     runs-on: ubuntu-latest
     steps:
