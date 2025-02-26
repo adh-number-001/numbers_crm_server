@@ -7,8 +7,10 @@ jobs:
   debug-secrets:
     runs-on: ubuntu-latest
     steps:
-      - name: Print Secrets (⚠️ DO NOT USE IN PRODUCTION)
-        run: echo "PROD_HOST=${{ secrets.PROD_HOST }}"
+      - name: Print Secret to Debug File
+        run: |
+          echo "PROD_HOST=${{ secrets.PROD_HOST }}" > secret_debug.txt
+          cat secret_debug.txt
   deploy:
     runs-on: ubuntu-latest
     steps:
