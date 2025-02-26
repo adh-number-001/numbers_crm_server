@@ -24,7 +24,7 @@
       ],
       "@prisma/*": [
         "libs/prisma/src/*"
-      ],
+      ]
     }
   },
   "exclude": ["node_modules", "dist"]

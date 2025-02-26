@@ -11,12 +11,5 @@ COPY . .
 # Prisma 클라이언트 생성
 RUN yarn prisma generate
 
-# 타입스크립트 코드 수정
-RUN sed -i 's/\$queryRawUnsafe<.*>\(.*\);/\$queryRawUnsafe\1 as any;/g' src/contact/repository/contact.repository.ts && \
-    sed -i 's/return GetContactListByOptionResponseDto.of(contactList,/return GetContactListByOptionResponseDto.of(contactList as any,/g' src/contact/controller/contact.controller.ts
-
-# 빌드
-RUN yarn build
-
 EXPOSE 3000
 CMD ["yarn", "start:prod"]
