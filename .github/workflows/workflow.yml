@@ -4,6 +4,11 @@ on:
     branches: [main] # ✅ main 푸시 시 배포 실행
 
 jobs:
+  debug-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Secrets (⚠️ DO NOT USE IN PRODUCTION)
+        run: echo "PROD_HOST=${{ secrets.PROD_HOST }}"
   deploy:
     runs-on: ubuntu-latest
     steps:
