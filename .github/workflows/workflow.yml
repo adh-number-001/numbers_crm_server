@@ -4,12 +4,12 @@ on:
     branches: [main] # ✅ main 푸시 시 배포 실행
 
 jobs:
-  debug-secrets:
+  debug-ssh:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Secrets
+      - name: Check SSH Connectivity
         run: |
-          echo "PROD_HOST=${{ secrets.PROD_HOST }}" | sed 's/./& /g'
+          nc -zv ${{ secrets.PROD_HOST }} 22
   deploy:
     runs-on: ubuntu-latest
     steps:
@@ -19,7 +19,7 @@ jobs:
       - name: Connect to EC2 and Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEV_HOST }}
+          host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
