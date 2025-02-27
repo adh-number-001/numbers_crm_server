@@ -26,6 +26,10 @@ jobs:
             # 프로젝트 디렉토리 이동
             cd ~/numbers_crm
 
+            # 환경 변수 설정
+            export NODE_ENV=prod
+            echo "NODE_ENV set to $NODE_ENV"
+
             # 최신 코드 가져오기
             git fetch --all
             git reset --hard origin/main
