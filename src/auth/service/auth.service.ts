@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
-
 import { Injectable } from '@nestjs/common';
+
+import { AuthEnum } from '@common/util/enum/auth-enum';
 
 import { AuthRepository } from '../repository/auth.repository';
 import { UserRepository } from '../../user/repository/user.repository';
@@ -13,21 +14,25 @@ export class AuthService {
   ) {}
 
   async register(
-    email: string,
+    username: string,
     password: string,
-    name: string,
+    fullName: string,
     phoneNumber: string,
+    birthDate?: bigint,
+    gender?: AuthEnum.GenderType,
   ) {
-    await this.userRepository.validateEmail(email);
+    await this.userRepository.validateUsername(username);
     await this.userRepository.validatePhoneNumber(phoneNumber);
 
     const hashPassword = await bcrypt.hash(password, 12);
 
     const user = await this.authRepository.register(
-      email,
+      username,
       hashPassword,
-      name,
+      fullName,
       phoneNumber,
+      birthDate,
+      gender,
     );
 
     return { userId: user.id };
