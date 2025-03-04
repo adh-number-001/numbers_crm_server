@@ -11,7 +11,7 @@ export class UserRepository {
     });
 
     if (user) {
-      throw new ForbiddenException('이미 가입된 email 입니다');
+      throw new ForbiddenException('이미 가입된 username 입니다');
     }
   }
 
