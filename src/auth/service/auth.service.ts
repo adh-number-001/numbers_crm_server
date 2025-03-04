@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 
 import { AuthEnum } from '@common/util/enum/auth-enum';
 
@@ -34,6 +34,18 @@ export class AuthService {
       birthDate,
       gender,
     );
+
+    return { userId: user.id };
+  }
+
+  async login(username: string, password: string) {
+    const user =
+      await this.userRepository.validateUsernameGetHashPassword(username);
+
+    const validatePassword = await bcrypt.compare(password, user.password);
+    if (!validatePassword) {
+      throw new ForbiddenException('비밀번호가 일치하지 않습니다');
+    }
 
     return { userId: user.id };
   }
