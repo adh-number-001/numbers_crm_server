@@ -33,11 +33,12 @@ model User {
   createdAt   BigInt  @default(0)
   isDeleted   Boolean @default(false)
   isBlocked   Boolean @default(false)
-  isAdmin     Boolean @default(false)
-  name        String
-  phoneNumber String  @unique
-  email       String? @unique
+  username    String  @unique
   password    String?
+  fullName    String
+  phoneNumber String  @unique
+  birthDate   BigInt?
+  gender      String?
 
   oAuth               OAuth?
   device              Device?
