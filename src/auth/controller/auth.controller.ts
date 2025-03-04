@@ -6,7 +6,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { RegisterRequestDto, RegisterResponseDto } from '../dto';
+import {
+  LoginRequestDto,
+  LoginResponseDto,
+  RegisterRequestDto,
+  RegisterResponseDto,
+} from '../dto';
 import { AuthService } from '../service/auth.service';
 
 @ApiTags('Auth')
@@ -16,7 +21,7 @@ export class AuthController {
 
   @Post('/register')
   @ApiOperation({
-    summary: 'id 회원가입 API',
+    summary: '회원가입 API',
   })
   @ApiForbiddenResponse({
     description: '이미 사용중인 id 또는 전화번호 입니다',
@@ -37,5 +42,22 @@ export class AuthController {
     );
 
     return new RegisterResponseDto(userId);
+  }
+
+  @Post('/login')
+  @ApiOperation({
+    summary: '로그인 API',
+  })
+  @ApiForbiddenResponse({
+    description: '유효하지 않은 계정 정보입니다',
+  })
+  @ApiCreatedResponse({
+    type: RegisterResponseDto,
+  })
+  async login(@Body() requestDto: LoginRequestDto) {
+    const { username, password } = requestDto;
+    const { userId } = await this.authService.login(username, password);
+
+    return new LoginResponseDto(userId);
   }
 }
