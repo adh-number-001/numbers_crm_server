@@ -16,21 +16,24 @@ export class AuthController {
 
   @Post('/register')
   @ApiOperation({
-    summary: 'email 회원가입 API',
+    summary: 'id 회원가입 API',
   })
   @ApiForbiddenResponse({
-    description: '이미 사용중인 email 또는 전화번호 입니다',
+    description: '이미 사용중인 id 또는 전화번호 입니다',
   })
   @ApiCreatedResponse({
     type: RegisterResponseDto,
   })
   async register(@Body() requestDto: RegisterRequestDto) {
-    const { email, password, name, phoneNumber } = requestDto;
+    const { username, password, fullName, phoneNumber, birthDate, gender } =
+      requestDto;
     const { userId } = await this.authService.register(
-      email,
+      username,
       password,
-      name,
+      fullName,
       phoneNumber,
+      birthDate,
+      gender,
     );
 
     return new RegisterResponseDto(userId);

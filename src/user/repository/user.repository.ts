@@ -5,9 +5,9 @@ import { PrismaService } from '@prisma';
 export class UserRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async validateEmail(email: string) {
+  async validateUsername(username: string) {
     const user = await this.prismaService.user.findFirst({
-      where: { email },
+      where: { username },
     });
 
     if (user) {
