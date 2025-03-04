@@ -42,6 +42,10 @@ jobs:
               yarn install --frozen-lockfile
             fi
 
+            # Prisma 마이그레이션 적용 (DB 스키마 최신화)
+            yarn prisma migrate deploy
+            yarn prisma generate  # Prisma Client 최신화
+
             # 소스 코드 변경 여부 확인 후 빌드 실행
             if git diff --quiet HEAD~1 -- src/; then
               echo "No source code changes, skipping build"
