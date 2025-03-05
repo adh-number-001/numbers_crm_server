@@ -5,6 +5,14 @@ import { PrismaService } from '@prisma';
 export class UserRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async getUserByUsername(username: string) {
+    const user = await this.prismaService.user.findFirst({
+      where: { username },
+    });
+
+    return user;
+  }
+
   async validateUsername(username: string) {
     const user = await this.prismaService.user.findFirst({
       where: { username },
