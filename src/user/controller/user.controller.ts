@@ -1,10 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import {
-  ApiForbiddenResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CheckUsernameRequestDto, CheckUsernameResponseDto } from '../dto';
 import { UserService } from '../service/user.service';
@@ -16,18 +11,16 @@ export class UserController {
 
   @Get('/:username/check-username')
   @ApiOperation({
-    summary: 'username(id) 중복 확인 API',
-  })
-  @ApiForbiddenResponse({
-    description: '이미 사용중인 username(id) 입니다',
+    summary: 'username(id) 사용 가능 여부 확인 API',
+    description: 'true: 사용 가능, false: 사용 불가능',
   })
   @ApiOkResponse({
     type: CheckUsernameResponseDto,
   })
   async checkUsername(@Param() requestDto: CheckUsernameRequestDto) {
     const { username } = requestDto;
-    await this.userService.checkUsername(username);
+    const isAvailable = await this.userService.checkUsername(username);
 
-    return new CheckUsernameResponseDto();
+    return new CheckUsernameResponseDto(isAvailable);
   }
 }

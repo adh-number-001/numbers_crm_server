@@ -7,6 +7,9 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async checkUsername(username: string) {
-    await this.userRepository.validateUsername(username);
+    const user = await this.userRepository.getUserByUsername(username);
+    const isAvailable = !user;
+
+    return isAvailable;
   }
 }

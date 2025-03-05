@@ -10,9 +10,9 @@ export class CheckUsernameRequestDto {
 
 export class CheckUsernameResponseDto {
   @ApiProperty()
-  readonly status: string;
+  readonly isAvailable: boolean;
 
-  constructor() {
-    this.status = 'OK';
+  constructor(isAvailable: boolean) {
+    this.isAvailable = isAvailable;
   }
 }
