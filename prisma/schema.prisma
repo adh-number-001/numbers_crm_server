@@ -93,6 +93,8 @@ model ContactCategory {
   user User @relation(fields: [userId], references: [id])
 
   contactNameCategoryMapping ContactNameCategoryMapping[]
+
+    @@unique([userId, name])
 }
 
 model ContactNameCategoryMapping {

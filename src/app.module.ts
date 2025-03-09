@@ -10,8 +10,14 @@ import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ContactModule } from './contact/contact.module';
+import { ContactCategoryModule } from './contact-category/contact-category.module';
 
-const domainModules = [AuthModule, UserModule, ContactModule];
+const domainModules = [
+  AuthModule,
+  UserModule,
+  ContactModule,
+  ContactCategoryModule,
+];
 
 @Module({
   imports: [
