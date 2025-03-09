@@ -107,15 +107,30 @@ model ContactName {
 }
 
 model Contact {
-  id                Int    @id @default(autoincrement())
-  createdAt         BigInt @default(0)
+  id                Int     @id @default(autoincrement())
+  createdAt         BigInt  @default(0)
   contactCategoryId Int
   name              String
   phoneNumber       String
+  isShownInList     Boolean @default(true)
 
-  contactNote ContactNote?
-  callLog     CallLog[]
-  contactName ContactName[]
+  contactNote  ContactNote?
+  callLog      CallLog[]
+  contactName  ContactName[]
+  mainMappings ContactMapping[] @relation("MainContact")
+  subMappings  ContactMapping[] @relation("SubContact")
+}
+
+model ContactMapping {
+  id            Int    @id @default(autoincrement())
+  createdAt     BigInt @default(0)
+  mainContactId Int
+  subContactId  Int
+
+  mainContact Contact @relation("MainContact", fields: [mainContactId], references: [id])
+  subContact  Contact @relation("SubContact", fields: [subContactId], references: [id])
+
+  @@unique([mainContactId, subContactId])
 }
 
 model ContactNote {
