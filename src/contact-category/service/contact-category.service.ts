@@ -16,4 +16,19 @@ export class ContactCategoryService {
 
     return contactCategoryList;
   }
+
+  async createContactCategory(userId: number, contactCategoryName: string) {
+    await this.contactCategoryRepository.validateContactCategoryByUserIdAndName(
+      userId,
+      contactCategoryName,
+    );
+
+    const contactCategory =
+      await this.contactCategoryRepository.createContactCategory(
+        userId,
+        contactCategoryName,
+      );
+
+    return { contactCategoryId: contactCategory.id };
+  }
 }

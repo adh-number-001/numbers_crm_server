@@ -1,7 +1,15 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import {
+  CreateContactCategoryRequestDto,
+  CreateContactCategoryResponseDto,
   GetContactCategoryListByUserIdRequestDto,
   GetContactCategoryListByUserIdResponseDto,
 } from '../dto';
@@ -30,5 +38,26 @@ export class ContactCategoryController {
       await this.contactCategoryService.getContactCategoryListByUserId(userId);
 
     return GetContactCategoryListByUserIdResponseDto.of(contactCategoryList);
+  }
+
+  @Post('/')
+  @ApiOperation({
+    summary: '그룹 생성 API',
+  })
+  @ApiForbiddenResponse({ description: '이미 존재하는 그룹명입니다' })
+  @ApiCreatedResponse({
+    type: CreateContactCategoryResponseDto,
+  })
+  async createContactCategory(
+    @Query() requestDto: CreateContactCategoryRequestDto,
+  ) {
+    const { userId, contactCategoryName } = requestDto;
+    const { contactCategoryId } =
+      await this.contactCategoryService.createContactCategory(
+        userId,
+        contactCategoryName,
+      );
+
+    return new CreateContactCategoryResponseDto(contactCategoryId);
   }
 }
