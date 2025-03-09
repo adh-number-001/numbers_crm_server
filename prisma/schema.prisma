@@ -92,25 +92,37 @@ model ContactCategory {
 
   user User @relation(fields: [userId], references: [id])
 
-  contactName ContactName[]
+  contactNameCategoryMapping ContactNameCategoryMapping[]
+}
+
+model ContactNameCategoryMapping {
+  id                Int    @id @default(autoincrement())
+  createdAt         BigInt @default(0)
+  contactNameId     Int
+  contactCategoryId Int
+
+  contactName     ContactName     @relation(fields: [contactNameId], references: [id])
+  contactCategory ContactCategory @relation(fields: [contactCategoryId], references: [id])
+
+  @@unique([contactNameId, contactCategoryId])
 }
 
 model ContactName {
-  id                Int    @id @default(autoincrement())
-  createdAt         BigInt @default(0)
-  contactCategoryId Int
-  contactId         Int
-  name              String
+  id        Int     @id @default(autoincrement())
+  createdAt BigInt  @default(0)
+  contactId Int
+  name      String
+  isMain    Boolean @default(true)
 
-  contactCategory ContactCategory @relation(fields: [contactCategoryId], references: [id])
-  contact         Contact         @relation(fields: [contactId], references: [id])
+  contact Contact @relation(fields: [contactId], references: [id])
+
+  contactNameCategoryMapping ContactNameCategoryMapping[]
 }
 
 model Contact {
   id                Int     @id @default(autoincrement())
   createdAt         BigInt  @default(0)
   contactCategoryId Int
-  name              String
   phoneNumber       String
   isShownInList     Boolean @default(true)
 
