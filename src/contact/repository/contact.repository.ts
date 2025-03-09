@@ -8,35 +8,36 @@ export class ContactRepository {
   async getContactListByOption(
     page: number,
     pageSize: number,
+    userId: number,
     contactCategoryId?: number,
     searchText?: string,
   ) {
     const offset = pageSize * (page - 1);
 
     const hasCategory = contactCategoryId !== undefined;
-    const hasSearch = Boolean(searchText);
+    const hasSearch = searchText !== undefined && searchText.trim().length > 0;
 
-    const whereSql = (() => {
-      const conditions = [
-        ...(hasCategory ? [`cn."contactCategoryId" = $1`] : []),
-        ...(hasSearch
-          ? [
-              `(cn.name LIKE '%' || $${hasCategory ? '2' : '1'} || '%' 
-                OR CAST(c."phoneNumber" AS TEXT) LIKE '%' || $${hasCategory ? '2' : '1'} || '%')`,
-            ]
-          : []),
-      ];
-      return conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-    })();
+    const conditions: string[] = [
+      `cc."userId" = $1`,
+      `c."isShownInList" = TRUE`,
+    ];
 
-    const params = (() => {
-      return [
-        ...(hasCategory ? [contactCategoryId] : []),
-        ...(hasSearch ? [searchText] : []),
-        pageSize,
-        offset,
-      ];
-    })();
+    if (hasCategory) conditions.push(`cn."contactCategoryId" = $2`);
+    if (hasSearch) {
+      const searchPlaceholder = hasCategory ? `$3` : `$2`;
+      conditions.push(
+        `(cn.name LIKE '%' || ${searchPlaceholder} || '%' 
+          OR CAST(c."phoneNumber" AS TEXT) LIKE '%' || ${searchPlaceholder} || '%')`,
+      );
+    }
+
+    const whereSql =
+      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const params: (string | number)[] = [userId];
+    if (hasCategory) params.push(contactCategoryId);
+    if (hasSearch) params.push(searchText as string);
+    params.push(pageSize, offset);
 
     const contactListQuery = `
       SELECT 

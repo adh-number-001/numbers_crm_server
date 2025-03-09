@@ -1,10 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import {
-  ApiForbiddenResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import {
   GetContactListByOptionRequestDto,
@@ -22,20 +17,19 @@ export class ContactController {
   @ApiOperation({
     summary: '옵션별 연락처 조회 API',
   })
-  @ApiForbiddenResponse({
-    description: '이미 사용중인 email 또는 전화번호 입니다',
-  })
   @ApiOkResponse({
     type: GetContactListByOptionResponseDto,
   })
   async getContactListByOption(
     @Query() requestDto: GetContactListByOptionRequestDto,
   ) {
-    const { page, pageSize, contactCategoryId, searchText } = requestDto;
+    const { page, pageSize, userId, contactCategoryId, searchText } =
+      requestDto;
     const { contactList, totalCount } =
       await this.contactService.getContactListByOption(
         page,
         pageSize,
+        userId,
         contactCategoryId,
         searchText,
       );
