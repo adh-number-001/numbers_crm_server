@@ -16,6 +16,12 @@ export class GetContactListByOptionRequestDto {
   @IsInt()
   readonly pageSize!: number;
 
+  @ApiProperty()
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsInt()
+  readonly userId!: number;
+
   @ApiProperty({ type: Number, required: false })
   @IsOptional()
   @Type(() => Number)

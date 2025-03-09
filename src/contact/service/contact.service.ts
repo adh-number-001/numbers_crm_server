@@ -9,6 +9,7 @@ export class ContactService {
   async getContactListByOption(
     page: number,
     pageSize: number,
+    userId: number,
     contactCategoryId?: number,
     searchText?: string,
   ) {
@@ -16,6 +17,7 @@ export class ContactService {
       await this.contactRepository.getContactListByOption(
         page,
         pageSize,
+        userId,
         contactCategoryId,
         searchText,
       );
