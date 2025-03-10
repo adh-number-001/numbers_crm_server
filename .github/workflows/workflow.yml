@@ -24,7 +24,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # 프로젝트 디렉토리 이동
-            cd ~/numbers_crm
+            cd ~/numbers_crm_server
 
             # 환경 변수 설정
             export NODE_ENV=prod
