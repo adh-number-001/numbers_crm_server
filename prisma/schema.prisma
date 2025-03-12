@@ -84,6 +84,24 @@ model Device {
   user User @relation(fields: [userId], references: [id])
 }
 
+model TempContact {
+  id                Int     @id @default(autoincrement())
+  createdAt         BigInt  @default(0)
+  uuid              String
+  note              String?
+  userId            Int
+  name              String?
+  phoneNumber       String
+  isMain            Boolean @default(true)
+  contactCategoryId Int?
+  mainContactId     Int?
+  tempMainContactId Int?
+
+  parentTempContact TempContact? @relation("TempContactToSubContacts", fields: [tempMainContactId], references: [id])
+
+  subTempContacts TempContact[] @relation("TempContactToSubContacts")
+}
+
 model ContactCategory {
   id        Int    @id @default(autoincrement())
   createdAt BigInt @default(0)
@@ -94,7 +112,7 @@ model ContactCategory {
 
   contactNameCategoryMapping ContactNameCategoryMapping[]
 
-    @@unique([userId, name])
+  @@unique([userId, name])
 }
 
 model ContactNameCategoryMapping {
@@ -122,11 +140,10 @@ model ContactName {
 }
 
 model Contact {
-  id                Int     @id @default(autoincrement())
-  createdAt         BigInt  @default(0)
-  contactCategoryId Int
-  phoneNumber       String
-  isShownInList     Boolean @default(true)
+  id            Int     @id @default(autoincrement())
+  createdAt     BigInt  @default(0)
+  phoneNumber   String
+  isShownInList Boolean @default(true)
 
   contactNote  ContactNote?
   callLog      CallLog[]
