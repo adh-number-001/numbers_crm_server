@@ -1,7 +1,9 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import {
+  CheckAndStoreNewContactListRequestDto,
+  CheckAndStoreNewContactListResponseDto,
   GetContactListByOptionRequestDto,
   GetContactListByOptionResponseDto,
 } from '../dto';
@@ -35,5 +37,28 @@ export class ContactController {
       );
 
     return GetContactListByOptionResponseDto.of(contactList, totalCount);
+  }
+
+  @Post('/list/temp')
+  @ApiOperation({
+    summary:
+      '[동기화-1] 연락처 리스트 중 새로운 연락처 개수 확인 및 임시 저장 API',
+    description: 'subPhoneNumber가 없을 경우 빈배열로 보내주세요',
+  })
+  @ApiOkResponse({
+    type: CheckAndStoreNewContactListResponseDto,
+  })
+  async checkAndStoreNewContactList(
+    @Body() requestDto: CheckAndStoreNewContactListRequestDto,
+  ) {
+    const { userId, contactCategoryId, contactList } = requestDto;
+    const { count, uuid } =
+      await this.contactService.checkAndStoreNewContactList(
+        userId,
+        contactCategoryId,
+        contactList,
+      );
+
+    return CheckAndStoreNewContactListResponseDto.of(count, uuid);
   }
 }
