@@ -42,4 +42,8 @@ export class ContactService {
 
     return { count, uuid };
   }
+
+  createContactListByTempContact(userId: number, uuid: string) {
+    return this.contactRepository.createContactListByTempContact(userId, uuid);
+  }
 }

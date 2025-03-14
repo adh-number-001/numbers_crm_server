@@ -4,6 +4,8 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CheckAndStoreNewContactListRequestDto,
   CheckAndStoreNewContactListResponseDto,
+  CreateContactListByTempContactRequestDto,
+  CreateContactListByTempContactResponseDto,
   GetContactListByOptionRequestDto,
   GetContactListByOptionResponseDto,
 } from '../dto';
@@ -60,5 +62,22 @@ export class ContactController {
       );
 
     return CheckAndStoreNewContactListResponseDto.of(count, uuid);
+  }
+
+  @Post('/list/contact')
+  @ApiOperation({
+    summary: '[동기화-2] 임시 저장된 연락처 리스트 업로드 API',
+  })
+  @ApiOkResponse({
+    type: CreateContactListByTempContactResponseDto,
+  })
+  async createContactListByTempContact(
+    @Body() requestDto: CreateContactListByTempContactRequestDto,
+  ) {
+    const { userId, uuid } = requestDto;
+
+    await this.contactService.createContactListByTempContact(userId, uuid);
+
+    return new CreateContactListByTempContactResponseDto();
   }
 }
