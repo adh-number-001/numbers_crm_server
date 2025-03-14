@@ -232,4 +232,118 @@ export class ContactRepository {
       count: tempData.length,
     };
   }
+
+  createContactListByTempContact(userId: number, uuid: string) {
+    return this.prismaService.$transaction(async (prisma) => {
+      // 임시 연락처 데이터 조회
+      const tempContacts = await prisma.tempContact.findMany({
+        where: { userId, uuid },
+        orderBy: { isMain: 'desc' },
+      });
+
+      if (tempContacts.length === 0) {
+        return { count: 0 };
+      }
+
+      // Contact 테이블에 데이터 삽입 (`RETURNING id`로 ID 가져오기)
+      const insertedContacts = await prisma.$queryRawUnsafe<
+        { id: number; phoneNumber: string }[]
+      >(
+        `
+        INSERT INTO "Contact" ("phoneNumber", "isShownInList", "createdAt")
+        SELECT "phoneNumber", "isMain", EXTRACT(EPOCH FROM NOW()) * 1000
+        FROM "TempContact"
+        WHERE "userId" = $1 AND "uuid" = $2
+        RETURNING id, "phoneNumber"
+      `,
+        userId,
+        uuid,
+      );
+
+      // 생성된 Contact 데이터를 기반으로 TempContact ID → Contact ID 매핑
+      const contactMap = new Map(
+        insertedContacts.map((c) => [c.phoneNumber, c.id]),
+      );
+
+      // ContactName 테이블에 데이터 삽입 (isMain = true 인 경우만) + `RETURNING id`
+      const insertedContactNames = await prisma.$queryRawUnsafe<
+        { id: number; contactId: number }[]
+      >(
+        `
+        INSERT INTO "ContactName" ("contactId", "name", "isMain", "createdAt")
+        SELECT c.id, t."name", TRUE, EXTRACT(EPOCH FROM NOW()) * 1000
+        FROM "TempContact" t
+        JOIN "Contact" c ON t."phoneNumber" = c."phoneNumber"
+        WHERE t."userId" = $1 AND t."uuid" = $2 AND t."isMain" = TRUE
+        RETURNING id, "contactId"
+      `,
+        userId,
+        uuid,
+      );
+
+      // ContactName ID 매핑
+      const contactNameMap = new Map(
+        insertedContactNames.map((c) => [c.contactId, c.id]),
+      );
+
+      // ContactNameCategoryMapping 테이블에 데이터 삽입
+      const contactNameCategoryData = tempContacts
+        .filter((temp) => temp.isMain && temp.contactCategoryId)
+        .map((temp) => ({
+          contactNameId: contactNameMap.get(contactMap.get(temp.phoneNumber)!),
+          contactCategoryId: temp.contactCategoryId!,
+        }))
+        .filter(
+          (
+            data,
+          ): data is { contactNameId: number; contactCategoryId: number } =>
+            data.contactNameId !== undefined,
+        );
+
+      if (contactNameCategoryData.length > 0) {
+        await prisma.contactNameCategoryMapping.createMany({
+          data: contactNameCategoryData,
+        });
+      }
+
+      // ContactMapping 테이블에 데이터 삽입 (mainContactId 존재하는 경우)
+      const contactMappingData = tempContacts
+        .filter((temp) => temp.mainContactId)
+        .map((temp) => ({
+          mainContactId: temp.mainContactId!,
+          subContactId: contactMap.get(temp.phoneNumber),
+        }))
+        .filter(
+          (data): data is { mainContactId: number; subContactId: number } =>
+            data.subContactId !== undefined,
+        );
+
+      if (contactMappingData.length > 0) {
+        await prisma.contactMapping.createMany({ data: contactMappingData });
+      }
+
+      // ContactMapping 테이블에 데이터 삽입 (tempMainContactId 존재하는 경우)
+      const tempMainMappingData = tempContacts
+        .filter((temp) => temp.tempMainContactId)
+        .map((temp) => {
+          const mainContactId = contactMap.get(
+            tempContacts.find((t) => t.id === temp.tempMainContactId!)
+              ?.phoneNumber ?? '',
+          );
+          const subContactId = contactMap.get(temp.phoneNumber);
+
+          return { mainContactId, subContactId };
+        })
+        .filter(
+          (data): data is { mainContactId: number; subContactId: number } =>
+            data.mainContactId !== undefined && data.subContactId !== undefined,
+        );
+
+      if (tempMainMappingData.length > 0) {
+        await prisma.contactMapping.createMany({ data: tempMainMappingData });
+      }
+
+      return { count: tempContacts.length };
+    });
+  }
 }
