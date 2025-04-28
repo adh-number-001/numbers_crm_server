@@ -11,12 +11,14 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ContactModule } from './contact/contact.module';
 import { ContactCategoryModule } from './contact-category/contact-category.module';
+import { DeviceModule } from './device/device.module';
 
 const domainModules = [
   AuthModule,
   UserModule,
   ContactModule,
   ContactCategoryModule,
+  DeviceModule,
 ];
 
 @Module({
