@@ -52,11 +52,11 @@ export class AuthController {
     description: '유효하지 않은 계정 정보입니다',
   })
   @ApiCreatedResponse({
-    type: RegisterResponseDto,
+    type: LoginResponseDto,
   })
   async login(@Body() requestDto: LoginRequestDto) {
-    const { username, password } = requestDto;
-    const { userId } = await this.authService.login(username, password);
+    const { loginId, password } = requestDto;
+    const { userId } = await this.authService.login(loginId, password);
 
     return new LoginResponseDto(userId);
   }
