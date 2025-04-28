@@ -29,35 +29,24 @@ model UserTermsOfUse {
 }
 
 model User {
-  id          Int     @id @default(autoincrement())
-  createdAt   BigInt  @default(0)
-  isDeleted   Boolean @default(false)
-  isBlocked   Boolean @default(false)
-  username    String  @unique
-  password    String
-  fullName    String
-  phoneNumber String  @unique
-  birthDate   BigInt?
-  gender      String?
+  id           Int     @id @default(autoincrement())
+  createdAt    BigInt  @default(0)
+  modifiedAt   BigInt  @default(0)
+  isDeleted    Boolean @default(false)
+  isBlocked    Boolean @default(false)
+  loginId      String  @unique
+  password     String
+  fullName     String
+  birthDate    BigInt
+  gender       String
+  refreshToken String?
 
-  oAuth               OAuth?
-  device              Device?
-  contactCategory     ContactCategory[]
-  callLog             CallLog[]
-  notificationSetting NotificationSetting?
-  userTermsOfUse      UserTermsOfUse[]
-  userToken           UserToken?
-}
-
-model UserToken {
-  id                    Int    @id @default(autoincrement())
-  createdAt             BigInt @default(0)
-  userId                Int    @unique
-  refreshToken          String @unique
-  accessTokenExpiresAt  Int
-  refreshTokenExpiresAt Int
-
-  user User @relation(fields: [userId], references: [id])
+  oAuth          OAuth?
+  device         Device[]
+  contactGroup   ContactGroup[]
+  callLog        CallLog[]
+  userTermsOfUse UserTermsOfUse[]
+  contact        Contact[]
 }
 
 model OAuth {
@@ -76,160 +65,156 @@ model Device {
   id          Int     @id @default(autoincrement())
   createdAt   BigInt  @default(0)
   isDeleted   Boolean @default(false)
-  userId      Int     @unique
-  deviceToken String
-  deviceType  String
-  deviceName  String
+  userId      Int
+  deviceId    String
+  osType      String
+  phoneNumber String
 
-  user User @relation(fields: [userId], references: [id])
+  user                User                 @relation(fields: [userId], references: [id])
+  notificationSetting NotificationSetting?
+
+  @@unique([userId, deviceId])
 }
 
-model TempContact {
-  id                Int     @id @default(autoincrement())
-  createdAt         BigInt  @default(0)
-  uuid              String
-  note              String?
-  userId            Int
-  name              String?
-  phoneNumber       String
-  isMain            Boolean @default(true)
-  contactCategoryId Int?
-  mainContactId     Int?
-  tempMainContactId Int?
-
-  parentTempContact TempContact? @relation("TempContactToSubContacts", fields: [tempMainContactId], references: [id])
-
-  subTempContacts TempContact[] @relation("TempContactToSubContacts")
-}
-
-model ContactCategory {
-  id        Int    @id @default(autoincrement())
-  createdAt BigInt @default(0)
-  userId    Int
-  name      String
+model ContactGroup {
+  id         Int    @id @default(autoincrement())
+  createdAt  BigInt @default(0)
+  modifiedAt BigInt @default(0)
+  userId     Int
+  name       String
+  color      String
 
   user User @relation(fields: [userId], references: [id])
 
-  contactNameCategoryMapping ContactNameCategoryMapping[]
+  contactGroupMapping ContactGroupMapping[]
 
   @@unique([userId, name])
 }
 
-model ContactNameCategoryMapping {
-  id                Int    @id @default(autoincrement())
-  createdAt         BigInt @default(0)
-  contactNameId     Int
-  contactCategoryId Int
+model ContactGroupMapping {
+  id             Int    @id @default(autoincrement())
+  createdAt      BigInt @default(0)
+  modifiedAt     BigInt @default(0)
+  contactId      Int
+  contactGroupId Int
 
-  contactName     ContactName     @relation(fields: [contactNameId], references: [id])
-  contactCategory ContactCategory @relation(fields: [contactCategoryId], references: [id])
+  contact      Contact      @relation(fields: [contactId], references: [id])
+  contactGroup ContactGroup @relation(fields: [contactGroupId], references: [id])
 
-  @@unique([contactNameId, contactCategoryId])
-}
-
-model ContactName {
-  id        Int     @id @default(autoincrement())
-  createdAt BigInt  @default(0)
-  contactId Int
-  name      String
-  isMain    Boolean @default(true)
-
-  contact Contact @relation(fields: [contactId], references: [id])
-
-  contactNameCategoryMapping ContactNameCategoryMapping[]
+  @@unique([contactId, contactGroupId])
 }
 
 model Contact {
-  id            Int     @id @default(autoincrement())
-  createdAt     BigInt  @default(0)
-  phoneNumber   String
-  isShownInList Boolean @default(true)
+  id          Int    @id @default(autoincrement())
+  createdAt   BigInt @default(0)
+  modifiedAt  BigInt @default(0)
+  userId      Int
+  name        String
+  phoneNumber String
 
-  contactNote  ContactNote?
-  callLog      CallLog[]
-  contactName  ContactName[]
-  mainMappings ContactMapping[] @relation("MainContact")
-  subMappings  ContactMapping[] @relation("SubContact")
+  user User @relation(fields: [userId], references: [id])
+
+  contactNote         ContactNote?
+  contactEvent        ContactEvent[]
+  contactGroupMapping ContactGroupMapping[]
+  contactAddress      ContactAddress[]
+  contactVehicle      ContactVehicle[]
+  contactCarNumber    ContactCarNumber[]
+  subContact          SubContact[]
 }
 
-model ContactMapping {
-  id            Int    @id @default(autoincrement())
-  createdAt     BigInt @default(0)
-  mainContactId Int
-  subContactId  Int
+model SubContact {
+  id          Int    @id @default(autoincrement())
+  createdAt   BigInt @default(0)
+  modifiedAt  BigInt @default(0)
+  contactId   Int
+  phoneNumber String
 
-  mainContact Contact @relation("MainContact", fields: [mainContactId], references: [id])
-  subContact  Contact @relation("SubContact", fields: [subContactId], references: [id])
+  contact Contact @relation(fields: [contactId], references: [id])
+}
 
-  @@unique([mainContactId, subContactId])
+model ContactAddress {
+  id         Int    @id @default(autoincrement())
+  createdAt  BigInt @default(0)
+  modifiedAt BigInt @default(0)
+  contactId  Int
+  body       String
+
+  contact Contact @relation(fields: [contactId], references: [id])
+}
+
+model ContactVehicle {
+  id         Int    @id @default(autoincrement())
+  createdAt  BigInt @default(0)
+  modifiedAt BigInt @default(0)
+  contactId  Int
+  body       String
+
+  contact Contact @relation(fields: [contactId], references: [id])
+}
+
+model ContactCarNumber {
+  id         Int    @id @default(autoincrement())
+  createdAt  BigInt @default(0)
+  modifiedAt BigInt @default(0)
+  contactId  Int
+  body       String
+
+  contact Contact @relation(fields: [contactId], references: [id])
 }
 
 model ContactNote {
+  id         Int    @id @default(autoincrement())
+  createdAt  BigInt @default(0)
+  modifiedAt BigInt @default(0)
+  contactId  Int    @unique
+  body       String
+
+  contact Contact @relation(fields: [contactId], references: [id])
+}
+
+model ContactEvent {
   id        Int    @id @default(autoincrement())
   createdAt BigInt @default(0)
   contactId Int    @unique
+  eventDate BigInt
+  type      String
   body      String
 
   contact Contact @relation(fields: [contactId], references: [id])
 }
 
-// NOTE: 저장되지 않은 번호와 통화한 기록도 가져올건지, 문답 작성 안했을경우 기본 어떻게 보여줄지 (default값 있는지)
 model CallLog {
-  id             Int    @id @default(autoincrement())
-  createdAt      BigInt @default(0)
-  userId         Int
-  contactId      Int?
-  callerNumber   String
-  receiverNumber String
-  callType       String
-  startedAt      Int
-  endedAt        Int
-  duration       Int
+  id          Int    @id @default(autoincrement())
+  createdAt   BigInt @default(0)
+  modifiedAt  BigInt @default(0)
+  userId      Int
+  phoneNumber String
+  type        String
+  date        BigInt
+  callDate    Int
 
-  user    User     @relation(fields: [userId], references: [id])
-  contact Contact? @relation(fields: [contactId], references: [id])
-
-  callLogNote       CallLogNote?
-  userCallLogAnswer UserCallLogAnswer[]
-}
-
-model CallLogNote {
-  id        Int    @id @default(autoincrement())
-  createdAt BigInt @default(0)
-  callLogId Int    @unique
-  body      String
-
-  callLog CallLog @relation(fields: [callLogId], references: [id])
-}
-
-model CallLogQuestion {
-  id        Int     @id @default(autoincrement())
-  createdAt BigInt  @default(0)
-  isDeleted Boolean @default(false)
-  body      String
-  position  Int
-
-  userCallLogAnswer UserCallLogAnswer[]
-}
-
-model UserCallLogAnswer {
-  id                Int    @id @default(autoincrement())
-  createdAt         BigInt @default(0)
-  callLogQuestionId Int
-  callLogId         Int
-  answer            String
-
-  callLog         CallLog         @relation(fields: [callLogId], references: [id])
-  callLogQuestion CallLogQuestion @relation(fields: [callLogQuestionId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model NotificationSetting {
-  id            Int     @id @default(autoincrement())
-  createdAt     BigInt  @default(0)
-  userId        Int     @unique
-  isCallEnabled Boolean
-  isNoteEnabled Boolean
-  isSyncEnabled Boolean
+  id                     Int     @id @default(autoincrement())
+  createdAt              BigInt  @default(0)
+  modifiedAt             BigInt  @default(0)
+  deviceId               Int     @unique
+  isAppNotificationAlert Boolean @default(true) // 앱 자체 알림
+  isMissedCallAlert      Boolean @default(true) // 부재중 전화 알림
+  isIncomingCallAlert    Boolean @default(true) // 수신 전화 알림
+  isMarketingAlert       Boolean @default(true) // 마케팅 광고 알림
 
-  user User @relation(fields: [userId], references: [id])
+  device Device @relation(fields: [deviceId], references: [id])
+}
+
+model UserContactLog {
+  id        Int    @id @default(autoincrement())
+  createdAt BigInt @default(0)
+  userId    Int
+  deviceId  Int
+  type      String
+  data      Json
 }
