@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { CheckUsernameRequestDto, CheckUsernameResponseDto } from '../dto';
+import { ValidateLoginIdRequestDto, ValidateLoginIdResponseDto } from '../dto';
 import { UserService } from '../service/user.service';
 
 @ApiTags('User')
@@ -9,18 +9,19 @@ import { UserService } from '../service/user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/:username/check-username')
+  @Get('/:loginId/validate-login-id')
   @ApiOperation({
-    summary: 'username(id) 사용 가능 여부 확인 API',
+    summary: 'Login Id 사용 가능 여부 확인 API',
     description: 'true: 사용 가능, false: 사용 불가능',
   })
   @ApiOkResponse({
-    type: CheckUsernameResponseDto,
+    type: ValidateLoginIdResponseDto,
   })
-  async checkUsername(@Param() requestDto: CheckUsernameRequestDto) {
-    const { username } = requestDto;
-    const isAvailable = await this.userService.checkUsername(username);
+  async validateLoginId(@Param() requestDto: ValidateLoginIdRequestDto) {
+    const { loginId } = requestDto;
 
-    return new CheckUsernameResponseDto(isAvailable);
+    const isAvailable = await this.userService.validateLoginId(loginId);
+
+    return new ValidateLoginIdResponseDto(isAvailable);
   }
 }

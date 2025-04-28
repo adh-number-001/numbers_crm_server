@@ -5,7 +5,7 @@ import { PrismaService } from '@prisma';
 export class UserRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getUserByUsername(loginId: string) {
+  async getUserByLoginId(loginId: string) {
     const user = await this.prismaService.user.findFirst({
       where: { loginId },
     });
@@ -23,7 +23,7 @@ export class UserRepository {
     }
   }
 
-  async validateUsernameGetHashPassword(loginId: string) {
+  async validateLoginIdGetUser(loginId: string) {
     const user = await this.prismaService.user.findFirst({
       where: { loginId },
     });

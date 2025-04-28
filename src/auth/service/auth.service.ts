@@ -41,8 +41,7 @@ export class AuthService {
   }
 
   async login(username: string, password: string) {
-    const user =
-      await this.userRepository.validateUsernameGetHashPassword(username);
+    const user = await this.userRepository.validateLoginIdGetUser(username);
 
     const validatePassword = await bcrypt.compare(password, user.password);
     if (!validatePassword) {
