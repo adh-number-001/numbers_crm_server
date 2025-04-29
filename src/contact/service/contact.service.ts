@@ -1,49 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { v4 as uuidV4 } from 'uuid';
+// import { Injectable } from '@nestjs/common';
+// import { v4 as uuidV4 } from 'uuid';
 
-import { ContactRepository } from '../repository/contact.repository';
-import { UpdateContact } from '../type';
+// import { ContactRepository } from '../repository/contact.repository';
+// import { UpdateContact } from '../type';
 
-@Injectable()
-export class ContactService {
-  constructor(private readonly contactRepository: ContactRepository) {}
+// @Injectable()
+// export class ContactService {
+//   constructor(private readonly contactRepository: ContactRepository) {}
 
-  async getContactListByOption(
-    page: number,
-    pageSize: number,
-    userId: number,
-    contactCategoryId?: number,
-    searchText?: string,
-  ) {
-    const { contactList, totalCount } =
-      await this.contactRepository.getContactListByOption(
-        page,
-        pageSize,
-        userId,
-        contactCategoryId,
-        searchText,
-      );
+//   async getContactListByOption(
+//     page: number,
+//     pageSize: number,
+//     userId: number,
+//     contactCategoryId?: number,
+//     searchText?: string,
+//   ) {
+//     const { contactList, totalCount } =
+//       await this.contactRepository.getContactListByOption(
+//         page,
+//         pageSize,
+//         userId,
+//         contactCategoryId,
+//         searchText,
+//       );
 
-    return { contactList, totalCount };
-  }
+//     return { contactList, totalCount };
+//   }
 
-  async checkAndStoreNewContactList(
-    userId: number,
-    contactCategoryId: number,
-    contactList: UpdateContact[],
-  ) {
-    const uuid = uuidV4();
-    const { count } = await this.contactRepository.checkAndStoreNewContactList(
-      userId,
-      contactCategoryId,
-      contactList,
-      uuid,
-    );
+//   async checkAndStoreNewContactList(
+//     userId: number,
+//     contactCategoryId: number,
+//     contactList: UpdateContact[],
+//   ) {
+//     const uuid = uuidV4();
+//     const { count } = await this.contactRepository.checkAndStoreNewContactList(
+//       userId,
+//       contactCategoryId,
+//       contactList,
+//       uuid,
+//     );
 
-    return { count, uuid };
-  }
+//     return { count, uuid };
+//   }
 
-  createContactListByTempContact(userId: number, uuid: string) {
-    return this.contactRepository.createContactListByTempContact(userId, uuid);
-  }
-}
+//   createContactListByTempContact(userId: number, uuid: string) {
+//     return this.contactRepository.createContactListByTempContact(userId, uuid);
+//   }
+// }
