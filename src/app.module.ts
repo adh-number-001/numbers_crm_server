@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { ContactModule } from './contact/contact.module';
 import { ContactCategoryModule } from './contact-category/contact-category.module';
 import { DeviceModule } from './device/device.module';
+import { TermsOfUseModule } from './terms-of-use/terms-of-use.module';
 
 const domainModules = [
   AuthModule,
@@ -19,6 +20,7 @@ const domainModules = [
   ContactModule,
   ContactCategoryModule,
   DeviceModule,
+  TermsOfUseModule,
 ];
 
 @Module({

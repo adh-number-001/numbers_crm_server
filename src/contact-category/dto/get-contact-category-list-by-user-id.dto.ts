@@ -32,7 +32,7 @@ export class GetContactCategoryListByUserIdResponseDto {
     this.contactCategoryList = contactCategoryList;
   }
 
-  static of(contactCategoryList: ContactCategory[]) {
+  static from(contactCategoryList: ContactCategory[]) {
     return new GetContactCategoryListByUserIdResponseDto(
       contactCategoryList.map((contactCategory) => {
         return new GetContactCategoryListDetail(

@@ -37,7 +37,7 @@ export class ContactCategoryController {
     const contactCategoryList =
       await this.contactCategoryService.getContactCategoryListByUserId(userId);
 
-    return GetContactCategoryListByUserIdResponseDto.of(contactCategoryList);
+    return GetContactCategoryListByUserIdResponseDto.from(contactCategoryList);
   }
 
   @Post('/')
