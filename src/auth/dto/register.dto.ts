@@ -17,7 +17,7 @@ class RegisterDeviceRequestDto {
   @IsString()
   readonly deviceId!: string;
 
-  @ApiProperty({ type: DeviceEnum.OsType })
+  @ApiProperty({ enum: DeviceEnum.OsType })
   @IsNotEmpty()
   @IsEnum(DeviceEnum.OsType)
   readonly osType!: DeviceEnum.OsType;
