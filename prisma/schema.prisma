@@ -12,7 +12,9 @@ model TermsOfUse {
   createdAt BigInt  @default(0)
   isDeleted Boolean @default(false)
   isRequire Boolean
-  date      BigInt
+  version   Int
+  title     String
+  body      String
 
   userTermsOfUse UserTermsOfUse[]
 }

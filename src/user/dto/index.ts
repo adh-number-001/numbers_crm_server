@@ -1,1 +1,1 @@
-export * from './check-username.dto';
+export * from './validate-login-id.dto';

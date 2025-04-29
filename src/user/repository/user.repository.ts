@@ -5,41 +5,31 @@ import { PrismaService } from '@prisma';
 export class UserRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getUserByUsername(username: string) {
+  async getUserByLoginId(loginId: string) {
     const user = await this.prismaService.user.findFirst({
-      where: { username },
+      where: { loginId },
     });
 
     return user;
   }
 
-  async validateUsername(username: string) {
+  async validateLoginId(loginId: string) {
     const user = await this.prismaService.user.findFirst({
-      where: { username },
+      where: { loginId },
     });
 
     if (user) {
-      throw new ForbiddenException('이미 가입된 username 입니다');
+      throw new ForbiddenException('이미 가입된 LoginId 입니다');
     }
   }
 
-  async validatePhoneNumber(phoneNumber: string) {
+  async validateLoginIdGetUser(loginId: string) {
     const user = await this.prismaService.user.findFirst({
-      where: { phoneNumber },
-    });
-
-    if (user) {
-      throw new ForbiddenException('이미 가입된 전화번호 입니다');
-    }
-  }
-
-  async validateUsernameGetHashPassword(username: string) {
-    const user = await this.prismaService.user.findFirst({
-      where: { username },
+      where: { loginId },
     });
 
     if (!user) {
-      throw new ForbiddenException('존재하지 않는 username 입니다');
+      throw new ForbiddenException('존재하지 않는 LoginId 입니다');
     }
 
     return user;

@@ -3,18 +3,37 @@ import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsNotEmpty,
-  IsOptional,
   IsString,
   Matches,
+  ValidateNested,
 } from 'class-validator';
 
 import { AuthEnum } from '@common/util/enum/auth-enum';
+import { DeviceEnum } from '@common/util/enum/device-enum';
+
+class RegisterDeviceRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly deviceId!: string;
+
+  @ApiProperty({ enum: DeviceEnum.OsType })
+  @IsNotEmpty()
+  @IsEnum(DeviceEnum.OsType)
+  readonly osType!: DeviceEnum.OsType;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Matches(/^\d{11}$/)
+  @IsString()
+  readonly phoneNumber!: string;
+}
 
 export class RegisterRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  readonly username!: string;
+  readonly loginId!: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -26,21 +45,21 @@ export class RegisterRequestDto {
   @IsString()
   readonly fullName!: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @Matches(/^\d{11}$/)
-  @IsString()
-  readonly phoneNumber!: string;
-
   @ApiProperty({ type: BigInt, required: false })
-  @IsOptional()
+  @IsNotEmpty()
   @Type(() => BigInt)
-  readonly birthDate?: bigint;
+  readonly birthDate!: bigint;
 
   @ApiProperty({ enum: AuthEnum.GenderType, required: false })
-  @IsOptional()
+  @IsNotEmpty()
   @IsEnum(AuthEnum.GenderType)
-  readonly gender?: AuthEnum.GenderType;
+  readonly gender!: AuthEnum.GenderType;
+
+  @ApiProperty({ type: RegisterDeviceRequestDto })
+  @IsNotEmpty()
+  @Type(() => RegisterDeviceRequestDto)
+  @ValidateNested()
+  readonly deviceInfo!: RegisterDeviceRequestDto;
 }
 
 export class RegisterResponseDto {

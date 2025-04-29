@@ -24,24 +24,24 @@ export class AuthController {
     summary: '회원가입 API',
   })
   @ApiForbiddenResponse({
-    description: '이미 사용중인 id 또는 전화번호 입니다',
+    description: '이미 가입된 id 입니다',
   })
   @ApiCreatedResponse({
     type: RegisterResponseDto,
   })
   async register(@Body() requestDto: RegisterRequestDto) {
-    const { username, password, fullName, phoneNumber, birthDate, gender } =
+    const { loginId, password, fullName, birthDate, gender, deviceInfo } =
       requestDto;
-    const { userId } = await this.authService.register(
-      username,
+    const userInfo = await this.authService.register(
+      loginId,
       password,
       fullName,
-      phoneNumber,
+      deviceInfo,
       birthDate,
       gender,
     );
 
-    return new RegisterResponseDto(userId);
+    return new RegisterResponseDto(userInfo.userId);
   }
 
   @Post('/login')
@@ -52,11 +52,11 @@ export class AuthController {
     description: '유효하지 않은 계정 정보입니다',
   })
   @ApiCreatedResponse({
-    type: RegisterResponseDto,
+    type: LoginResponseDto,
   })
   async login(@Body() requestDto: LoginRequestDto) {
-    const { username, password } = requestDto;
-    const { userId } = await this.authService.login(username, password);
+    const { loginId, password } = requestDto;
+    const { userId } = await this.authService.login(loginId, password);
 
     return new LoginResponseDto(userId);
   }

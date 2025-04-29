@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsInt, IsString } from 'class-validator';
 
-export class CreateContactCategoryRequestDto {
+export class CreateContactGroupRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @Type(() => Number)
@@ -12,14 +12,19 @@ export class CreateContactCategoryRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  readonly contactCategoryName!: string;
+  readonly name!: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly color!: string;
 }
 
-export class CreateContactCategoryResponseDto {
+export class CreateContactGroupResponseDto {
   @ApiProperty()
-  readonly contactCategoryId: number;
+  readonly contactGroupId: number;
 
-  constructor(contactCategoryId: number) {
-    this.contactCategoryId = contactCategoryId;
+  constructor(contactGroupId: number) {
+    this.contactGroupId = contactGroupId;
   }
 }

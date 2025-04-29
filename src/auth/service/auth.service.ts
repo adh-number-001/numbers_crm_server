@@ -5,6 +5,7 @@ import { AuthEnum } from '@common/util/enum/auth-enum';
 
 import { AuthRepository } from '../repository/auth.repository';
 import { UserRepository } from '../../user/repository/user.repository';
+import { RegisterDeviceInfo } from '../type';
 
 @Injectable()
 export class AuthService {
@@ -14,33 +15,31 @@ export class AuthService {
   ) {}
 
   async register(
-    username: string,
+    loginId: string,
     password: string,
     fullName: string,
-    phoneNumber: string,
-    birthDate?: bigint,
-    gender?: AuthEnum.GenderType,
+    deviceInfo: RegisterDeviceInfo,
+    birthDate: bigint,
+    gender: AuthEnum.GenderType,
   ) {
-    await this.userRepository.validateUsername(username);
-    await this.userRepository.validatePhoneNumber(phoneNumber);
+    await this.userRepository.validateLoginId(loginId);
 
     const hashPassword = await bcrypt.hash(password, 12);
 
-    const user = await this.authRepository.register(
-      username,
+    const { id } = await this.authRepository.register(
+      loginId,
       hashPassword,
       fullName,
-      phoneNumber,
+      deviceInfo,
       birthDate,
       gender,
     );
 
-    return { userId: user.id };
+    return { userId: id };
   }
 
   async login(username: string, password: string) {
-    const user =
-      await this.userRepository.validateUsernameGetHashPassword(username);
+    const user = await this.userRepository.validateLoginIdGetUser(username);
 
     const validatePassword = await bcrypt.compare(password, user.password);
     if (!validatePassword) {
