@@ -5,7 +5,6 @@ import { AuthEnum } from '@common/util/enum/auth-enum';
 
 import { AuthRepository } from '../repository/auth.repository';
 import { UserRepository } from '../../user/repository/user.repository';
-import { DeviceRepository } from '../../device/repository/device.repository';
 import { RegisterDeviceInfo } from '../type';
 
 @Injectable()
@@ -13,7 +12,6 @@ export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly userRepository: UserRepository,
-    private readonly deviceRepisotry: DeviceRepository,
   ) {}
 
   async register(
