@@ -21,7 +21,7 @@ export class AuthRepository {
       data: { loginId, password, fullName, birthDate, gender },
     });
 
-    await this.prismaService.device.create({
+    await this.prismaService.userDevice.create({
       data: { userId: id, deviceId, osType, phoneNumber },
     });
 

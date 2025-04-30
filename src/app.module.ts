@@ -8,19 +8,19 @@ import { PrismaModule } from '@prisma';
 
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
 // import { ContactModule } from './contact/contact.module';
 import { ContactGroupModule } from './contact-group/contact-group.module';
-import { DeviceModule } from './device/device.module';
+import { UserDeviceModule } from './user-device/user-device.module';
 import { TermsOfUseModule } from './terms-of-use/terms-of-use.module';
 import { UserTermsOfUseModule } from './user-terms-of-use/user-terms-of-use.module';
+import { AuthModule } from './authentication/auth/auth.module';
 
 const domainModules = [
   AuthModule,
   UserModule,
   // ContactModule,
   ContactGroupModule,
-  DeviceModule,
+  UserDeviceModule,
   TermsOfUseModule,
   UserTermsOfUseModule,
 ];

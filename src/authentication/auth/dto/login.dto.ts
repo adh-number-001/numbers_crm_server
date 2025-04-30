@@ -11,13 +11,23 @@ export class LoginRequestDto {
   @IsNotEmpty()
   @IsString()
   readonly password!: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly deviceId!: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly phoneNumber!: string;
 }
 
 export class LoginResponseDto {
   @ApiProperty()
-  readonly userId: number;
+  readonly accessToken: string;
 
-  constructor(userId: number) {
-    this.userId = userId;
+  constructor(accessToken: string) {
+    this.accessToken = accessToken;
   }
 }

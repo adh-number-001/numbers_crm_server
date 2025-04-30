@@ -55,9 +55,14 @@ export class AuthController {
     type: LoginResponseDto,
   })
   async login(@Body() requestDto: LoginRequestDto) {
-    const { loginId, password } = requestDto;
-    const { userId } = await this.authService.login(loginId, password);
+    const { loginId, password, deviceId, phoneNumber } = requestDto;
+    const { accessToken } = await this.authService.login(
+      loginId,
+      password,
+      deviceId,
+      phoneNumber,
+    );
 
-    return new LoginResponseDto(userId);
+    return new LoginResponseDto(accessToken);
   }
 }
