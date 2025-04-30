@@ -50,10 +50,8 @@ export class AuthService {
     deviceId: string,
     phoneNumber: string,
   ) {
-    // Login Id 존재 확인
     const user = await this.userRepository.validateLoginIdGetUser(loginId);
 
-    // pw 일치 여부 확인
     const validatePassword = await bcrypt.compare(password, user.password);
     if (!validatePassword) {
       throw new ForbiddenException('비밀번호가 일치하지 않습니다');
@@ -69,17 +67,17 @@ export class AuthService {
         phoneNumber,
       );
 
-    // refreshToken 생성 및 db update
     const refreshToken = this.createRefreshToken(userId, userDeviceId);
+    const hashedRefreshToken =
+      this.refreshTokenService.hashRefreshToken(refreshToken);
     await this.userDeviceRepository.updateRefreshToken(
       userDeviceId,
-      refreshToken,
+      hashedRefreshToken,
     );
 
-    // accessToken 생성
     const accessToken = this.createAccessToken(userId, userDeviceId);
 
-    return { accessToken };
+    return { accessToken, refreshToken };
   }
 
   createRefreshToken(userId: number, userDeviceId: number) {
@@ -94,5 +92,25 @@ export class AuthService {
       userId,
       userDeviceId,
     });
+  }
+
+  async refreshAccessToken(refreshToken: string) {
+    const { userId, userDeviceId } =
+      await this.refreshTokenService.validateRefreshToken(refreshToken);
+
+    const hashedRefreshToken =
+      this.refreshTokenService.hashRefreshToken(refreshToken);
+
+    await this.userDeviceRepository.validateRefreshTokenByUserDeviceIdAndRefreshToken(
+      userDeviceId,
+      hashedRefreshToken,
+    );
+
+    const accessToken = this.accessTokenService.createAccessToken({
+      userId,
+      userDeviceId,
+    });
+
+    return { accessToken };
   }
 }

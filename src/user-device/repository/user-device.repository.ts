@@ -1,4 +1,8 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '@prisma';
 
 @Injectable()
@@ -40,5 +44,18 @@ export class UserDeviceRepository {
       where: { id: userDeviceId, isDeleted: false },
       data: { refreshToken },
     });
+  }
+
+  async validateRefreshTokenByUserDeviceIdAndRefreshToken(
+    userDeviceId: number,
+    refreshToken: string,
+  ) {
+    const userDevice = await this.prismaService.userDevice.findFirst({
+      where: { id: userDeviceId, refreshToken, isDeleted: false },
+    });
+
+    if (!userDevice) {
+      throw new UnauthorizedException('유효하지 않는 리프레시 토큰입니다.');
+    }
   }
 }
