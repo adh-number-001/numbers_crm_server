@@ -7,7 +7,7 @@ export class UserRepository {
 
   async getUserByLoginId(loginId: string) {
     const user = await this.prismaService.user.findFirst({
-      where: { loginId },
+      where: { loginId, isDeleted: false },
     });
 
     return user;
@@ -25,11 +25,11 @@ export class UserRepository {
 
   async validateLoginIdGetUser(loginId: string) {
     const user = await this.prismaService.user.findFirst({
-      where: { loginId },
+      where: { loginId, isDeleted: false },
     });
 
     if (!user) {
-      throw new ForbiddenException('존재하지 않는 LoginId 입니다');
+      throw new ForbiddenException('존재하지 않는 Login Id 입니다');
     }
 
     return user;

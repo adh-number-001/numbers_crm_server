@@ -8,6 +8,16 @@ export class TermsOfUseRepository {
   getTermsOfUseList() {
     return this.prismaService.termsOfUse.findMany({
       where: { isDeleted: false },
+      orderBy: { isRequire: 'desc', createdAt: 'asc' },
     });
+  }
+
+  async getRequireTermsOfUseIdList() {
+    const termsOfUse = await this.prismaService.termsOfUse.findMany({
+      where: { isDeleted: false, isRequire: true },
+      orderBy: { isRequire: 'desc', createdAt: 'asc' },
+    });
+
+    return termsOfUse.map((item) => item.id);
   }
 }

@@ -8,6 +8,7 @@ export class ContactGroupRepository {
   getContactGroupListByUserId(userId: number) {
     return this.prismaService.contactGroup.findMany({
       where: { userId },
+      orderBy: { createdAt: 'asc' },
     });
   }
 
