@@ -71,6 +71,8 @@ export class AuthService {
 
     // refreshToken 생성 및 db update
     const refreshToken = this.createRefreshToken(userId, userDeviceId);
+    const hashedRefreshToken =
+      this.refreshTokenService.hashRefreshToken(refreshToken);
     await this.userDeviceRepository.updateRefreshToken(
       userDeviceId,
       refreshToken,
