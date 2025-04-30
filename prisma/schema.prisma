@@ -31,20 +31,19 @@ model UserTermsOfUse {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  createdAt    BigInt  @default(0)
-  modifiedAt   BigInt  @default(0)
-  isDeleted    Boolean @default(false)
-  isBlocked    Boolean @default(false)
-  loginId      String  @unique
-  password     String
-  fullName     String
-  birthDate    BigInt
-  gender       String
-  refreshToken String?
+  id         Int     @id @default(autoincrement())
+  createdAt  BigInt  @default(0)
+  modifiedAt BigInt  @default(0)
+  isDeleted  Boolean @default(false)
+  isBlocked  Boolean @default(false)
+  loginId    String  @unique
+  password   String
+  fullName   String
+  birthDate  BigInt
+  gender     String
 
   oAuth          OAuth?
-  device         Device[]
+  userDevice     UserDevice[]
   contactGroup   ContactGroup[]
   callLog        CallLog[]
   userTermsOfUse UserTermsOfUse[]
@@ -63,14 +62,15 @@ model OAuth {
   user User @relation(fields: [userId], references: [id])
 }
 
-model Device {
-  id          Int     @id @default(autoincrement())
-  createdAt   BigInt  @default(0)
-  isDeleted   Boolean @default(false)
-  userId      Int
-  deviceId    String
-  osType      String
-  phoneNumber String
+model UserDevice {
+  id           Int     @id @default(autoincrement())
+  createdAt    BigInt  @default(0)
+  isDeleted    Boolean @default(false)
+  userId       Int
+  deviceId     String
+  osType       String
+  phoneNumber  String
+  refreshToken String?
 
   user                User                 @relation(fields: [userId], references: [id])
   notificationSetting NotificationSetting?
@@ -203,20 +203,20 @@ model NotificationSetting {
   id                     Int     @id @default(autoincrement())
   createdAt              BigInt  @default(0)
   modifiedAt             BigInt  @default(0)
-  deviceId               Int     @unique
+  userDeviceId           Int     @unique
   isAppNotificationAlert Boolean @default(true) // 앱 자체 알림
   isMissedCallAlert      Boolean @default(true) // 부재중 전화 알림
   isIncomingCallAlert    Boolean @default(true) // 수신 전화 알림
   isMarketingAlert       Boolean @default(true) // 마케팅 광고 알림
 
-  device Device @relation(fields: [deviceId], references: [id])
+  userDevice UserDevice @relation(fields: [userDeviceId], references: [id])
 }
 
 model UserContactLog {
-  id        Int    @id @default(autoincrement())
-  createdAt BigInt @default(0)
-  userId    Int
-  deviceId  Int
-  type      String
-  data      Json
+  id           Int    @id @default(autoincrement())
+  createdAt    BigInt @default(0)
+  userId       Int
+  userDeviceId Int
+  type         String
+  data         Json
 }
