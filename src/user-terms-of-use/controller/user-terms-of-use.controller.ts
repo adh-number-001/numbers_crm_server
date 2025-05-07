@@ -6,6 +6,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { JwtUserRequestDto } from '@common/dto';
+import { UserJwtAuth } from '@common/util/guards';
+import { Jwt } from '@common/decorator';
+
 import {
   CreateUserTermsOfUseRequestDto,
   CreateUserTermsOfUseResponseDto,
@@ -18,6 +22,7 @@ export class UserTermsOfUseController {
   constructor(private readonly userTermsOfUseService: UserTermsOfUseService) {}
 
   @Post('/')
+  @UserJwtAuth()
   @ApiOperation({
     summary: '유저 이용약관 동의 기록 생성 API',
   })
@@ -26,9 +31,11 @@ export class UserTermsOfUseController {
     type: CreateUserTermsOfUseResponseDto,
   })
   async createUserTermsOfUse(
+    @Jwt() jwtUserRequestDto: JwtUserRequestDto,
     @Query() requestDto: CreateUserTermsOfUseRequestDto,
   ) {
-    const { userId, termsOfUseIdList } = requestDto;
+    const { userId } = jwtUserRequestDto;
+    const { termsOfUseIdList } = requestDto;
     await this.userTermsOfUseService.createUserTermsOfUse(
       userId,
       termsOfUseIdList,
