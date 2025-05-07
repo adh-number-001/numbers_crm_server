@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import {
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -9,6 +9,8 @@ import {
 import {
   GetLoginIdListByPhoneNumberRequestDto,
   GetLoginIdListByPhoneNumberResponseDto,
+  UpdateUserPasswordRequestDto,
+  UpdateUserPasswordResponseDto,
   ValidateLoginIdRequestDto,
   ValidateLoginIdResponseDto,
 } from '../dto';
@@ -39,7 +41,7 @@ export class UserController {
   @ApiOperation({
     summary: 'PhoneNumber로 LoginId 리스트 조회 (ID 찾기) API',
   })
-  @ApiNotFoundResponse({ description: '계정이 존재하지 않습니다.' })
+  @ApiNotFoundResponse({ description: '유저 정보를 찾을 수 없습니다.' })
   @ApiOkResponse({
     type: GetLoginIdListByPhoneNumberResponseDto,
   })
@@ -52,5 +54,21 @@ export class UserController {
       await this.userService.getLoginIdListByPhoneNumber(phoneNumber);
 
     return new GetLoginIdListByPhoneNumberResponseDto(loginIdList);
+  }
+
+  @Patch('/password')
+  @ApiOperation({
+    summary: 'Password 변경 API',
+  })
+  @ApiNotFoundResponse({ description: '유저 정보를 찾을 수 없습니다.' })
+  @ApiOkResponse({
+    type: UpdateUserPasswordResponseDto,
+  })
+  async updateUserPassword(@Body() requestDto: UpdateUserPasswordRequestDto) {
+    const { loginId, password } = requestDto;
+
+    const user = await this.userService.updateUserPassword(loginId, password);
+
+    return new UpdateUserPasswordResponseDto(user.id);
   }
 }

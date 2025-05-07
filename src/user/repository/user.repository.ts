@@ -46,9 +46,27 @@ export class UserRepository {
     });
 
     if (!loginIdList.length) {
-      throw new NotFoundException('계정이 존재하지 않습니다.');
+      throw new NotFoundException('유저 정보를 찾을 수 없습니다.');
     }
 
     return { loginIdList };
+  }
+
+  async getUserIdByLoginId(loginId: string) {
+    const user = await this.prismaService.user.findFirst({
+      where: { loginId, isDeleted: false, isBlocked: false },
+    });
+    if (!user) {
+      throw new NotFoundException('유저 정보를 찾을 수 없습니다.');
+    }
+
+    return { userId: user.id };
+  }
+
+  updateUserPassword(userId: number, hashPassword: string) {
+    return this.prismaService.user.update({
+      where: { id: userId, isDeleted: false, isBlocked: false },
+      data: { password: hashPassword },
+    });
   }
 }
