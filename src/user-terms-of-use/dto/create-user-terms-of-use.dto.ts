@@ -1,14 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import { IsNotEmpty, IsInt, ArrayNotEmpty, Min } from 'class-validator';
 
 export class CreateUserTermsOfUseRequestDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @Type(() => Number)
-  @IsInt()
-  readonly userId!: number;
-
   @ApiProperty({ isArray: true, type: Number })
   @IsNotEmpty()
   @ArrayNotEmpty()

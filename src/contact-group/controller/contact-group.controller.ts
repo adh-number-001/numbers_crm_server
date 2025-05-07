@@ -7,10 +7,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { UserJwtAuth } from '@common/util/guards';
+import { JwtUserRequestDto } from '@common/dto';
+import { Jwt } from '@common/decorator';
+
 import {
   CreateContactGroupRequestDto,
   CreateContactGroupResponseDto,
-  GetContactGroupListByUserIdRequestDto,
   GetContactGroupListByUserIdResponseDto,
 } from '../dto';
 import { ContactGroupService } from '../service/contact-group.service';
@@ -20,18 +23,18 @@ import { ContactGroupService } from '../service/contact-group.service';
 export class ContactGroupController {
   constructor(private readonly contactGroupService: ContactGroupService) {}
 
-  // TODO: 유저 jwt 붙이기
   @Get('/list')
+  @UserJwtAuth()
   @ApiOperation({
-    summary: '그룹 리스트 조회 API',
+    summary: '유저별 그룹 리스트 조회 API',
   })
   @ApiOkResponse({
     type: GetContactGroupListByUserIdResponseDto,
   })
   async getContactGroupListByOption(
-    @Query() requestDto: GetContactGroupListByUserIdRequestDto,
+    @Jwt() jwtUserRequestDto: JwtUserRequestDto,
   ) {
-    const { userId } = requestDto;
+    const { userId } = jwtUserRequestDto;
     const contactGroupList =
       await this.contactGroupService.getContactGroupListByUserId(userId);
 
@@ -39,6 +42,7 @@ export class ContactGroupController {
   }
 
   @Post('/')
+  @UserJwtAuth()
   @ApiOperation({
     summary: '그룹 생성 API',
   })
@@ -46,8 +50,13 @@ export class ContactGroupController {
   @ApiCreatedResponse({
     type: CreateContactGroupResponseDto,
   })
-  async createContactGroup(@Query() requestDto: CreateContactGroupRequestDto) {
-    const { userId, name, color } = requestDto;
+  async createContactGroup(
+    @Jwt() jwtUserRequestDto: JwtUserRequestDto,
+    @Query() requestDto: CreateContactGroupRequestDto,
+  ) {
+    const { userId } = jwtUserRequestDto;
+    const { name, color } = requestDto;
+
     const { contactGroupId } =
       await this.contactGroupService.createContactGroup(userId, name, color);
 
