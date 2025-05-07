@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 
 import { ConfigService } from '@nestjs/config';
-import { JwtUserPayload } from '@common/dto/jwt-user.dto';
+import { RefreshJwtUserPayload } from '@common/dto';
 import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { createHash } from 'crypto';
 
@@ -16,7 +16,7 @@ export class RefreshTokenService {
     private readonly configService: ConfigService,
   ) {}
 
-  createRefreshToken(payload: JwtUserPayload) {
+  createRefreshToken(payload: RefreshJwtUserPayload) {
     return this.jwtService.sign(payload, {
       secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET_KEY'),
       expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN'),

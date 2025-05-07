@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '@prisma';
 
 @Injectable()
@@ -33,5 +37,18 @@ export class UserRepository {
     }
 
     return user;
+  }
+
+  async getLoginIdListByPhoneNumber(phoneNumber: string) {
+    const loginIdList = await this.prismaService.user.findMany({
+      select: { loginId: true },
+      where: { isDeleted: false, userDevice: { some: { phoneNumber } } },
+    });
+
+    if (!loginIdList.length) {
+      throw new NotFoundException('계정이 존재하지 않습니다.');
+    }
+
+    return { loginIdList };
   }
 }
