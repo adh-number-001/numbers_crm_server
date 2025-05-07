@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContactGroup } from '@prisma/client';
+
+import { ContactGroupWithCount } from '../type';
 
 export class GetContactGroupListDetail {
   @ApiProperty()
@@ -11,10 +12,19 @@ export class GetContactGroupListDetail {
   @ApiProperty()
   readonly color: string;
 
-  constructor(contactGroupId: number, name: string, color: string) {
+  @ApiProperty()
+  readonly contactCount: number;
+
+  constructor(
+    contactGroupId: number,
+    name: string,
+    color: string,
+    contactCount: number,
+  ) {
     this.contactGroupId = contactGroupId;
     this.name = name;
     this.color = color;
+    this.contactCount = contactCount;
   }
 }
 
@@ -26,13 +36,14 @@ export class GetContactGroupListByUserIdResponseDto {
     this.contactGroupList = contactGroupList;
   }
 
-  static from(contactGroupList: ContactGroup[]) {
+  static from(contactGroupList: ContactGroupWithCount[]) {
     return new GetContactGroupListByUserIdResponseDto(
       contactGroupList.map((contactGroup) => {
         return new GetContactGroupListDetail(
           contactGroup.id,
           contactGroup.name,
           contactGroup.color,
+          contactGroup._count.contactGroupMapping,
         );
       }),
     );
