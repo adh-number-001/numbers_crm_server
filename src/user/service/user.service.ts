@@ -12,4 +12,11 @@ export class UserService {
 
     return isAvailable;
   }
+
+  async getLoginIdListByPhoneNumber(phoneNumber: string) {
+    const { loginIdList } =
+      await this.userRepository.getLoginIdListByPhoneNumber(phoneNumber);
+
+    return { loginIdList: loginIdList.map((item) => item.loginId) };
+  }
 }

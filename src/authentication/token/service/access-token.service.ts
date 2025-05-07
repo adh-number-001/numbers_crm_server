@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { ConfigService } from '@nestjs/config';
-import { JwtUserPayload } from '@common/dto/jwt-user.dto';
+import { AccessJwtUserPayload } from '@common/dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class AccessTokenService {
     private readonly configService: ConfigService,
   ) {}
 
-  createAccessToken(payload: JwtUserPayload) {
+  createAccessToken(payload: AccessJwtUserPayload) {
     return this.jwtService.sign(payload, {
       secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET_KEY'),
       expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRES_IN'),
