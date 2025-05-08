@@ -88,7 +88,7 @@ model ContactGroup {
 
   user User @relation(fields: [userId], references: [id])
 
-  contactGroupMapping ContactGroupMapping[]
+  contactGroupMapping ContactGroupMapping[] @relation("ContactGroupToMapping")
 
   @@unique([userId, name])
 }
@@ -101,7 +101,7 @@ model ContactGroupMapping {
   contactGroupId Int
 
   contact      Contact      @relation(fields: [contactId], references: [id])
-  contactGroup ContactGroup @relation(fields: [contactGroupId], references: [id])
+  contactGroup ContactGroup @relation("ContactGroupToMapping", onDelete: Cascade, fields: [contactGroupId], references: [id])
 
   @@unique([contactId, contactGroupId])
 }
