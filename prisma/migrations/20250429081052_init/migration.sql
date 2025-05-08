@@ -1,6 +1,0 @@
--- AlterTable
-ALTER TABLE "Contact" ALTER COLUMN "name" DROP DEFAULT,
-ALTER COLUMN "userId" DROP DEFAULT;
-
--- AlterTable
-ALTER TABLE "User" ALTER COLUMN "loginId" DROP DEFAULT;
