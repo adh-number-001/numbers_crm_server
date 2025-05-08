@@ -5,12 +5,14 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  Matches,
   ValidateNested,
 } from 'class-validator';
 
 class UpdateSubPhoneNumberListDto {
   @ApiProperty()
   @IsNotEmpty()
+  @Matches(/^\d{11}$/)
   @IsString()
   readonly phoneNumber!: string;
 }

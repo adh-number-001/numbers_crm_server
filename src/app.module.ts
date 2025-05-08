@@ -8,7 +8,7 @@ import { PrismaModule } from '@prisma';
 
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
-// import { ContactModule } from './contact/contact.module';
+import { ContactModule } from './contact/contact.module';
 import { ContactGroupModule } from './contact-group/contact-group.module';
 import { UserDeviceModule } from './user-device/user-device.module';
 import { TermsOfUseModule } from './terms-of-use/terms-of-use.module';
@@ -18,7 +18,7 @@ import { AuthModule } from './authentication/auth/auth.module';
 const domainModules = [
   AuthModule,
   UserModule,
-  // ContactModule,
+  ContactModule,
   ContactGroupModule,
   UserDeviceModule,
   TermsOfUseModule,

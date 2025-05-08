@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class GetLoginIdListByPhoneNumberRequestDto {
   @ApiProperty()
   @IsNotEmpty()
+  @Matches(/^\d{11}$/)
   @IsString()
   readonly phoneNumber!: string;
 }

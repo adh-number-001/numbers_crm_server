@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '@prisma';
 
 @Injectable()
@@ -44,6 +48,21 @@ export class ContactGroupRepository {
     return this.prismaService.contactGroup.update({
       where: { id: contactGroupId, userId },
       data: { name, color },
+    });
+  }
+
+  validateContactGroupIdListAndUserId(
+    userId: number,
+    contactGroupIdList: number[],
+  ) {
+    contactGroupIdList.map(async (item) => {
+      const contactGroup = await this.prismaService.contactGroup.findFirst({
+        where: { id: item, userId },
+      });
+
+      if (!contactGroup) {
+        throw new NotFoundException('그룹을 찾을 수 없습니다.');
+      }
     });
   }
 }
