@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { ContactGroupRepository } from '../repository/contact-group.repository';
+import { UpdateContactGroup } from '../type';
 
 @Injectable()
 export class ContactGroupService {
@@ -15,18 +16,40 @@ export class ContactGroupService {
     return contactGroupList;
   }
 
-  async createContactGroup(userId: number, name: string, color: string) {
-    await this.contactGroupRepository.validateContactGroupByUserIdAndName(
-      userId,
-      name,
-    );
+  async updateContactGroupList(
+    userId: number,
+    contactGroupList: UpdateContactGroup[],
+  ) {
+    await Promise.all(
+      contactGroupList.map((group) => {
+        const { contactGroupId, name, color } = group;
 
-    const contactGroup = await this.contactGroupRepository.createContactGroup(
-      userId,
-      name,
-      color,
-    );
+        if (contactGroupId && !name && !color) {
+          return this.contactGroupRepository.deleteContactGroupAndMapping(
+            userId,
+            contactGroupId,
+          );
+        }
 
-    return { contactGroupId: contactGroup.id };
+        if (contactGroupId && name && color) {
+          return this.contactGroupRepository.updateContactGroup(
+            userId,
+            contactGroupId,
+            name,
+            color,
+          );
+        }
+
+        if (!contactGroupId && name && color) {
+          return this.contactGroupRepository.createContactGroup(
+            userId,
+            name,
+            color,
+          );
+        }
+
+        return Promise.resolve();
+      }),
+    );
   }
 }
