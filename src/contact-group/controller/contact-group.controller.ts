@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -12,9 +12,9 @@ import { JwtUserRequestDto } from '@common/dto';
 import { Jwt } from '@common/decorator';
 
 import {
-  CreateContactGroupRequestDto,
-  CreateContactGroupResponseDto,
   GetContactGroupListByUserIdResponseDto,
+  UpdateContactGroupListRequestDto,
+  UpdateContactGroupListResponseDto,
 } from '../dto';
 import { ContactGroupService } from '../service/contact-group.service';
 
@@ -41,25 +41,29 @@ export class ContactGroupController {
     return GetContactGroupListByUserIdResponseDto.from(contactGroupList);
   }
 
-  @Post('/')
+  @Patch('/')
   @UserJwtAuth()
   @ApiOperation({
-    summary: '그룹 생성 API',
+    summary: '그룹 관리 (생성, 수정, 삭제) API',
+    description:
+      '생성: name + color / 수정: contactGroupId + name + color / 삭제: contactGroupId',
   })
   @ApiForbiddenResponse({ description: '이미 존재하는 그룹명입니다' })
   @ApiCreatedResponse({
-    type: CreateContactGroupResponseDto,
+    type: UpdateContactGroupListResponseDto,
   })
-  async createContactGroup(
+  async updateContactGroupList(
     @Jwt() jwtUserRequestDto: JwtUserRequestDto,
-    @Query() requestDto: CreateContactGroupRequestDto,
+    @Body() requestDto: UpdateContactGroupListRequestDto,
   ) {
     const { userId } = jwtUserRequestDto;
-    const { name, color } = requestDto;
+    const { contactGroupList } = requestDto;
 
-    const { contactGroupId } =
-      await this.contactGroupService.createContactGroup(userId, name, color);
+    await this.contactGroupService.updateContactGroupList(
+      userId,
+      contactGroupList,
+    );
 
-    return new CreateContactGroupResponseDto(contactGroupId);
+    return new UpdateContactGroupListResponseDto();
   }
 }

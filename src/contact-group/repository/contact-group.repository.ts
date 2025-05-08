@@ -28,4 +28,22 @@ export class ContactGroupRepository {
       throw new ForbiddenException('이미 존재하는 그룹명입니다');
     }
   }
+
+  deleteContactGroupAndMapping(userId: number, contactGroupId: number) {
+    return this.prismaService.contactGroup.delete({
+      where: { id: contactGroupId, userId },
+    });
+  }
+
+  updateContactGroup(
+    userId: number,
+    contactGroupId: number,
+    name: string,
+    color: string,
+  ) {
+    return this.prismaService.contactGroup.update({
+      where: { id: contactGroupId, userId },
+      data: { name, color },
+    });
+  }
 }
