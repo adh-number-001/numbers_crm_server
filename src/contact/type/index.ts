@@ -2,8 +2,10 @@ import {
   Contact,
   ContactAddress,
   ContactCarNumber,
+  ContactEvent,
   ContactGroup,
   ContactGroupMapping,
+  ContactNote,
   ContactVehicle,
   SubContact,
 } from '@prisma/client';
@@ -43,4 +45,6 @@ export type ContactDetail = Contact & {
   contactAddress: ContactAddress[];
   contactVehicle: ContactVehicle[];
   contactCarNumber: ContactCarNumber[];
+  contactNote: ContactNote | null;
+  contactEvent: ContactEvent[];
 };

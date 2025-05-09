@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+
+import { ContactEnum } from '@common/util/enum/contact-enum';
+
 import { IsInt, IsNotEmpty } from 'class-validator';
 import { ContactDetail } from '../type';
 
@@ -80,6 +83,32 @@ class ContactCarNumberListDetail {
   }
 }
 
+class ContactEventListDetail {
+  @ApiProperty()
+  readonly contactEventId: number;
+
+  @ApiProperty()
+  readonly eventDate: bigint;
+
+  @ApiProperty({ enum: ContactEnum.ContactEventType })
+  readonly type: string;
+
+  @ApiProperty()
+  readonly body: string;
+
+  constructor(
+    contactEventId: number,
+    eventDate: bigint,
+    type: string,
+    body: string,
+  ) {
+    this.contactEventId = contactEventId;
+    this.eventDate = eventDate;
+    this.type = type;
+    this.body = body;
+  }
+}
+
 export class GetContactDetailResponseDto {
   @ApiProperty()
   readonly contactId: number;
@@ -105,6 +134,12 @@ export class GetContactDetailResponseDto {
   @ApiProperty({ type: [ContactCarNumberListDetail] })
   readonly carNumberList: ContactCarNumberListDetail[];
 
+  @ApiProperty()
+  readonly contactNote: string;
+
+  @ApiProperty({ type: [ContactEventListDetail] })
+  readonly contactEventList: ContactEventListDetail[];
+
   constructor(
     contactId: number,
     name: string,
@@ -114,6 +149,8 @@ export class GetContactDetailResponseDto {
     addressList: ContactAddressListDetail[],
     vehicleList: ContactVehicleListDetail[],
     carNumberList: ContactCarNumberListDetail[],
+    contactNote: string,
+    contactEventList: ContactEventListDetail[],
   ) {
     this.contactId = contactId;
     this.name = name;
@@ -123,6 +160,8 @@ export class GetContactDetailResponseDto {
     this.addressList = addressList;
     this.vehicleList = vehicleList;
     this.carNumberList = carNumberList;
+    this.contactNote = contactNote;
+    this.contactEventList = contactEventList;
   }
 
   static from(contactDetail: ContactDetail) {
@@ -150,6 +189,13 @@ export class GetContactDetailResponseDto {
       contactDetail.contactCarNumber.map((carNumber) => ({
         contactCarNumberId: carNumber.id,
         body: carNumber.body,
+      })),
+      contactDetail.contactNote ? contactDetail.contactNote.body : '',
+      contactDetail.contactEvent.map((contactEvent) => ({
+        contactEventId: contactEvent.id,
+        eventDate: contactEvent.eventDate,
+        type: contactEvent.type,
+        body: contactEvent.body,
       })),
     );
   }
