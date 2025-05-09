@@ -1,5 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { Jwt } from '@common/decorator';
 import { JwtUserRequestDto } from '@common/dto';
@@ -7,7 +13,9 @@ import { UserJwtAuth } from '@common/util/guards';
 
 import {
   CreateContactRequestDto,
-  CreateContactResponseDto, //   CheckAndStoreNewContactListRequestDto,
+  CreateContactResponseDto,
+  GetContactDetailRequestDto,
+  GetContactDetailResponseDto, //   CheckAndStoreNewContactListRequestDto,
   //   CheckAndStoreNewContactListResponseDto,
   //   CreateContactListByTempContactRequestDto,
   //   CreateContactListByTempContactResponseDto,
@@ -57,6 +65,30 @@ export class ContactController {
     );
 
     return new CreateContactResponseDto();
+  }
+
+  @Get('/:contactId/detail')
+  @UserJwtAuth()
+  @ApiOperation({
+    summary: '연락처 상세 조회 API',
+  })
+  @ApiNotFoundResponse({ description: '존재하지 않는 연락처입니다.' })
+  @ApiForbiddenResponse({ description: '해당 계정의 연락처가 아닙니다.' })
+  @ApiOkResponse({
+    type: GetContactDetailResponseDto,
+  })
+  async getContactDetail(
+    @Jwt() jwtUserRequestDto: JwtUserRequestDto,
+    @Param() requestDto: GetContactDetailRequestDto,
+  ) {
+    const { userId } = jwtUserRequestDto;
+    const { contactId } = requestDto;
+    const { contactDetail } = await this.contactService.getContactDetail(
+      userId,
+      contactId,
+    );
+
+    return GetContactDetailResponseDto.from(contactDetail);
   }
 
   //   // TODO: 유저 jwt 붙이기

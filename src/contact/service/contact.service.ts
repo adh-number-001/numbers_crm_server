@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { ContactRepository } from '../repository/contact.repository';
 import { ContactGroupRepository } from '../../contact-group/repository/contact-group.repository';
@@ -35,6 +35,21 @@ export class ContactService {
       vehicleList,
       carNumberList,
     );
+  }
+
+  async getContactDetail(userId: number, contactId: number) {
+    await this.contactRepository.validateContactId(contactId);
+    await this.contactRepository.validateUserIdAndContactId(userId, contactId);
+
+    const contactDetail = await this.contactRepository.getContactDetail(
+      userId,
+      contactId,
+    );
+    if (!contactDetail) {
+      throw new NotFoundException('존재하지 않는 연락처입니다.');
+    }
+
+    return { contactDetail };
   }
 
   //   async getContactListByOption(

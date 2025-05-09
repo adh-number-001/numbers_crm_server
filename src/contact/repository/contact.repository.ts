@@ -1,5 +1,9 @@
 import { EncryptionService } from '@common/util/encrypt/encrypt.service';
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '@prisma';
 
 @Injectable()
@@ -62,6 +66,40 @@ export class ContactRepository {
           contactId: contact.id,
         })),
       });
+    });
+  }
+
+  async validateContactId(contactId: number) {
+    const contact = await this.prismaService.contact.findFirst({
+      where: { id: contactId },
+    });
+    if (!contact) {
+      throw new NotFoundException('존재하지 않는 연락처입니다.');
+    }
+  }
+
+  async validateUserIdAndContactId(userId: number, contactId: number) {
+    const contact = await this.prismaService.contact.findFirst({
+      where: { id: contactId, userId },
+    });
+    if (!contact) {
+      throw new ForbiddenException('해당 계정의 연락처가 아닙니다.');
+    }
+  }
+
+  getContactDetail(userId: number, contactId: number) {
+    return this.prismaService.contact.findFirst({
+      where: { id: contactId, userId },
+      include: {
+        subContact: { orderBy: { createdAt: 'asc' } },
+        contactGroupMapping: {
+          orderBy: { createdAt: 'asc' },
+          include: { contactGroup: true },
+        },
+        contactAddress: { orderBy: { createdAt: 'asc' } },
+        contactVehicle: { orderBy: { createdAt: 'asc' } },
+        contactCarNumber: { orderBy: { createdAt: 'asc' } },
+      },
     });
   }
 
