@@ -34,7 +34,7 @@ export class GetContactListByOptionRequestDto {
   readonly searchText?: string;
 }
 
-export class GetContactCategoryListDetail {
+class GetContactCategoryListDetail {
   @ApiProperty()
   readonly contactCategoryName: string;
 
@@ -43,7 +43,7 @@ export class GetContactCategoryListDetail {
   }
 }
 
-export class GetContactListDetail {
+class GetContactListDetail {
   @ApiProperty()
   readonly contactName: string;
 

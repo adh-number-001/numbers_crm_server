@@ -1,3 +1,13 @@
+import {
+  Contact,
+  ContactAddress,
+  ContactCarNumber,
+  ContactGroup,
+  ContactGroupMapping,
+  ContactVehicle,
+  SubContact,
+} from '@prisma/client';
+
 export type ContactListByOption = {
   contactName: string;
   contactId: number;
@@ -25,4 +35,12 @@ export type TempContactData = {
   isMain: boolean;
   mainContactId: number | null;
   tempMainContactId: number | null;
+};
+
+export type ContactDetail = Contact & {
+  subContact: SubContact[];
+  contactGroupMapping: (ContactGroupMapping & { contactGroup: ContactGroup })[];
+  contactAddress: ContactAddress[];
+  contactVehicle: ContactVehicle[];
+  contactCarNumber: ContactCarNumber[];
 };
