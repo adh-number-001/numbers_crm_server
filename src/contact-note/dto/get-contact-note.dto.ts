@@ -15,10 +15,10 @@ export class GetContactNoteResponseDto {
   @ApiProperty({ type: Number, required: false })
   readonly contactNoteId: number | null;
 
-  @ApiProperty({ type: String, required: false })
-  readonly body: string | null;
+  @ApiProperty()
+  readonly body: string;
 
-  constructor(contactNoteId: number | null, body: string | null) {
+  constructor(contactNoteId: number | null, body: string) {
     this.contactNoteId = contactNoteId;
     this.body = body;
   }
@@ -26,7 +26,7 @@ export class GetContactNoteResponseDto {
   static from(contactNote: ContactNote | null) {
     return new GetContactNoteResponseDto(
       contactNote ? contactNote.id : null,
-      contactNote ? contactNote.body : null,
+      contactNote ? contactNote.body : '',
     );
   }
 }

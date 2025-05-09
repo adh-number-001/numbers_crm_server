@@ -99,6 +99,8 @@ export class ContactRepository {
         contactAddress: { orderBy: { createdAt: 'asc' } },
         contactVehicle: { orderBy: { createdAt: 'asc' } },
         contactCarNumber: { orderBy: { createdAt: 'asc' } },
+        contactNote: true,
+        contactEvent: { orderBy: { eventDate: 'desc' } },
       },
     });
   }
