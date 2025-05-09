@@ -1,7 +1,7 @@
 import { Jwt } from '@common/decorator';
 import { JwtUserRequestDto } from '@common/dto';
 import { UserJwtAuth } from '@common/util/guards';
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Param, Patch } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -9,7 +9,11 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { GetContactNoteResponseDto, GetContactNoteRequestDto } from '../dto';
+import {
+  CreateOrUpdateContactNoteResponseDto,
+  CreateOrUpdateContactNoteBodyRequestDto,
+  CreateOrUpdateContactNoteParamRequestDto,
+} from '../dto';
 import { ContactNoteService } from '../service/contact-note.service';
 
 @ApiTags('ContactNote')
@@ -17,27 +21,30 @@ import { ContactNoteService } from '../service/contact-note.service';
 export class ContactNoteController {
   constructor(private readonly contactNoteService: ContactNoteService) {}
 
-  @Get('/:contactId')
+  @Patch('/:contactId')
   @UserJwtAuth()
   @ApiOperation({
-    summary: '연락처 메모 조회 API',
+    summary: '연락처 메모 생성/수정 API',
   })
   @ApiNotFoundResponse({ description: '존재하지 않는 연락처입니다.' })
   @ApiForbiddenResponse({ description: '해당 계정의 연락처가 아닙니다.' })
   @ApiOkResponse({
-    type: GetContactNoteResponseDto,
+    type: CreateOrUpdateContactNoteResponseDto,
   })
-  async getContactNote(
+  async createOrUpdateContactNote(
     @Jwt() jwtUserRequestDto: JwtUserRequestDto,
-    @Param() requestDto: GetContactNoteRequestDto,
+    @Param() paramRequestDto: CreateOrUpdateContactNoteParamRequestDto,
+    @Body() bodyRequestDto: CreateOrUpdateContactNoteBodyRequestDto,
   ) {
     const { userId } = jwtUserRequestDto;
-    const { contactId } = requestDto;
-    const contactNote = await this.contactNoteService.getContactNote(
+    const { contactId } = paramRequestDto;
+    const { body } = bodyRequestDto;
+    const contactNote = await this.contactNoteService.createOrUpdateContactNote(
       userId,
       contactId,
+      body,
     );
 
-    return GetContactNoteResponseDto.from(contactNote);
+    return CreateOrUpdateContactNoteResponseDto.from(contactNote);
   }
 }

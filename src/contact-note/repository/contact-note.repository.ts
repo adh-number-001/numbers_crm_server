@@ -10,4 +10,12 @@ export class ContactNoteRepository {
       where: { contactId, contact: { userId } },
     });
   }
+
+  createOrUpdateContactNote(userId: number, contactId: number, body: string) {
+    return this.prismaService.contactNote.upsert({
+      where: { contactId, contact: { userId } },
+      create: { contactId, body },
+      update: { body },
+    });
+  }
 }

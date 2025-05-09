@@ -16,4 +16,19 @@ export class ContactNoteService {
 
     return this.contactNoteRepository.getContactNote(userId, contactId);
   }
+
+  async createOrUpdateContactNote(
+    userId: number,
+    contactId: number,
+    body: string,
+  ) {
+    await this.contactRepository.validateContactId(contactId);
+    await this.contactRepository.validateUserIdAndContactId(userId, contactId);
+
+    return this.contactNoteRepository.createOrUpdateContactNote(
+      userId,
+      contactId,
+      body,
+    );
+  }
 }
