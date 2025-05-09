@@ -178,7 +178,7 @@ model ContactNote {
 model ContactEvent {
   id        Int    @id @default(autoincrement())
   createdAt BigInt @default(0)
-  contactId Int    @unique
+  contactId Int
   eventDate BigInt
   type      String
   body      String
