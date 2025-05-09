@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 import { ContactEnum } from '@common/util/enum/contact-enum';
+import { BigIntTransformer } from '@common/util/bigint-transformer';
 
 import { IsInt, IsNotEmpty } from 'class-validator';
 import { ContactDetail } from '../type';
@@ -165,6 +166,8 @@ export class GetContactDetailResponseDto {
   }
 
   static from(contactDetail: ContactDetail) {
+    const item = BigIntTransformer.toObject<ContactDetail>(contactDetail);
+
     return new GetContactDetailResponseDto(
       contactDetail.id,
       contactDetail.name,
@@ -191,7 +194,7 @@ export class GetContactDetailResponseDto {
         body: carNumber.body,
       })),
       contactDetail.contactNote ? contactDetail.contactNote.body : '',
-      contactDetail.contactEvent.map((contactEvent) => ({
+      item.contactEvent.map((contactEvent) => ({
         contactEventId: contactEvent.id,
         eventDate: contactEvent.eventDate,
         type: contactEvent.type,
