@@ -14,6 +14,7 @@ import { UserDeviceModule } from './user-device/user-device.module';
 import { TermsOfUseModule } from './terms-of-use/terms-of-use.module';
 import { UserTermsOfUseModule } from './user-terms-of-use/user-terms-of-use.module';
 import { AuthModule } from './authentication/auth/auth.module';
+import { ContactNoteModule } from './contact-note/contact-note.module';
 
 const domainModules = [
   AuthModule,
@@ -23,6 +24,7 @@ const domainModules = [
   UserDeviceModule,
   TermsOfUseModule,
   UserTermsOfUseModule,
+  ContactNoteModule,
 ];
 
 @Module({

@@ -20,10 +20,6 @@ export class CreateContactListByTempContactResponseDto {
   readonly status: string;
 
   constructor() {
-    this.status = 'OK';
-  }
-
-  static of() {
-    return new CreateContactListByTempContactResponseDto();
+    this.status = 'Success!';
   }
 }
